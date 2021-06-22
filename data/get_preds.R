@@ -1,5 +1,6 @@
 # gets all the variables needed to replicate the analysis in Tomo's CogSci paper
-# not done
+# not done yet
+
 
 library(tidyverse)
 library(here)
@@ -30,7 +31,11 @@ write_csv(df, here("data/replicate.csv"))
 ##############
 
 
-# ask about time
+# for the time variable
+# for each problem, take the time the student did the last step and subtract 
+# the time the student did the first step
+
+
 # no "bigotter" "smallrabbit" (present in prepost) in the logdata
 # but there are "smallotter" and "bigrabbit" in the logdata (but not in prepost)
 
@@ -40,21 +45,34 @@ write_csv(df, here("data/replicate.csv"))
 # cond
 # pre
 # num_solved
-# incs *
-# hint *
+# incs
+# hint
+# percentage of steps with hints ***
 # time ***
 # incs_dia ***
 # time_dia ***
 
 
+########################################################################
+## THE LINEAR MODELS USED IN TOMO'S PAPER EXCLUDING GRADE AS A PREDICTOR
+########################################################################
+
+
+# can do now
+
 # mod1 <- lm(post_pk ~ cond + pre + cond:pre + num_solved)
-# mod1 <- lm(post_ck ~ cond + pre + cond:pre + num_solved)
+# mod2 <- lm(post_ck ~ cond + pre + cond:pre + num_solved)
 # 
 # mod_num_solved <- lm(num_solved ~ cond + pre + cond:pre)
 # mod_inc <- lm(inc ~ cond + pre + cond:pre + num_solved)
 # mod_hint <- lm(hint ~ cond + pre + cond:pre + num_solved)
+
+
+
+# can't do yet (missing time, incs_dia, and time_dia)
+
 # mod_time <- lm(time ~ cond + pre + cond:pre + num_solved)
 # 
-# mod_inc <- lm(inc ~ pre + inc_dia + time_dia + num_solved)
-# mod_hint <- lm(hint ~ pre + inc_dia + time_dia + num_solved)
-# mod_time <- lm(time ~ pre + inc_dia + time_dia + num_solved)
+# mod_inc <- lm(inc ~ pre + incs_dia + time_dia + num_solved)
+# mod_hint <- lm(hint ~ pre + incs_dia + time_dia + num_solved)
+# mod_time <- lm(time ~ pre + incs_dia + time_dia + num_solved)
