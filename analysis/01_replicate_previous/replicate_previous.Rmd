@@ -1,0 +1,127 @@
+---
+title: "Replicating The Linear Regression Models From Tomo's Study"
+author: "Bin & Lizzy"
+date: "6/25/2021"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    toc_depth: 6
+---
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(corrplot)
+
+DATA_PATH <- here("data/processed/replicate.csv")
+df <- read_csv(DATA_PATH)
+```
+
+
+### Correlation Matrix
+
+```{r}
+df %>%
+  select(c(CK_post, PK_post, CKPK_pre, num_solved, inc_dia, inc_sym, hints, perc_hint_steps)) %>%
+  cor() %>%
+  round(3)
+```
+
+```{r}
+df %>%
+  select(c(CK_post, PK_post, CKPK_pre, num_solved, inc_dia, inc_sym, hints, perc_hint_steps)) %>%
+  cor() %>%
+  corrplot()
+```
+
+
+### Prediting Posttest CK and PK scores
+
+*To test the effect of the intervention and its interaction with learners’ prior knowledge, we conducted two separate linear regressions, one with conceptual knowledge posttest scores and one with procedural knowledge posttest scores as dependent variables. In both models, condition (Diagram or No-Diagram), prior knowledge pretest score (combined CK and PK scores), and the interaction between the two served as predictors. Additionally, the number of problems solved in the ITS and grade level were included as covariates.*
+
+##### Previous results
+
+*In both models, there was no significant main effect of condition (CK: β = -0.20, t(78) = -0.28, p = .78, PK: β = -0.28, t(78) = -0.60, p = .55) and no significant interaction of condition and pretest scores (CK: β = .09, t(78) = .76, p = .45, PK: β = .03, t(79) = .39, p = .69).*
+
+##### Results
+
+```{r}
+mod1 <- lm(CK_post ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
+mod2 <- lm(PK_post ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
+```
+```{r, echo = T}
+summary(mod1)$coefficients
+summary(mod2)$coefficients
+```
+
+Here, `condition` and `condition:CKPK_pre` are not significant predictors of the posttest PK and CK scores at a significance level of 0.05, which matches with previous results. However, `condition` is a significant predictor of `PK_post` at the 0.10 significance level. Addtionally, the signs of the beta estimates for these predictors are the same as those from previous results (though need to know how `condition` was factored in the previous study).
+
+
+### Factors that leads to efficient learning
+
+*To examine whether learners in the Diagram condition showed efficient learning, we ran four separate linear regressions with each of the process measures [number of problems solved, average number of incorrect steps per symbolic step, average number of hints per symbolic step, and time used per symbolic step] as a dependent variable. In all four models, condition, pretest score, and their interaction were included as independent variables... we added the number of problems solved as a covariate to three of the four models (the ones in which it was not the dependent variable) because the number of problems solved was strongly/moderately correlated with each of the three other dependent variables.*
+
+##### Previous results
+
+*First, we found a main effect of pretest scores on the number of problems solved, β = 3.04, t(79) = 7.49, p < .01 ... This increase was steeper for students in the No-Diagram condition than the Diagram condition, β = -1.24, t(79) = -2.12, p = .04 ...*
+
+
+*Regarding hint use and average time spent per step, we found a significant main effect of condition (hint use: β = - 0.71, t(78) = -3.08, p < .01; time per step: β = -12.18, t(78) =
+-2.89, p < .01) but no significant interactions between condition and pretest score. There were no significant main nor interaction effects on the average number of incorrect attempts made per step.* 
+
+##### Results
+
+```{r}
+mod1 <- lm(num_solved ~ condition + CKPK_pre + condition:CKPK_pre, data = df)
+mod2 <- lm(inc_sym ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
+mod3 <- lm(hints ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
+# mod4 <- lm(time ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
+```
+
+```{r}
+summary(mod1)$coefficients
+summary(mod2)$coefficients
+summary(mod3)$coefficients
+```
+
+All three of the predictors for `num_solved` were significant. Here, however, the increase is steeper for students in the `alldiagram` condition than the `interleaved` condition (from the negative coefficient).
+
+```{r}
+df %>%
+  group_by(condition) %>%
+  summarise(mean_num_solved = mean(num_solved))
+```
+
+`condition` is a significant predictor for `hints` like the previous study. Though the interaction term `condition:CKPK_pre` is a significant predictor for `hints` and `num_solved` is a significant predictor for `inc_sym`, contrary to the previous study. 
+
+
+### How does anticipatory diagrammatic selfexplanation scaffold in student performance?
+
+*We ran three additional linear regressions with the same set of predictors of primary interest: pretest scores, the average number of incorrect attempts for each diagrammatic step, and the average time spent for each diagrammatic step. We did not include the average number of hints requested since only one student used hints for diagrammatic steps. We included grade level and the number of problems solved as covariates in order to keep the models consistent with other models presented earlier. The dependent variables for the three models were the average number of incorrect attempts for each symbolic step, the average time spent for each symbolic step, and the average number of hints requested for each symbolic step.*
+
+##### Previous results
+
+*When controlling for these other variables, the average number of incorrect attempts on diagram steps significantly predicted more incorrect attempts on symbolic steps (β = 6.17, t(35) = 2.50, p = .02) and more time spent on symbolic steps (β = 25.64, t(35) = 2.34, p = .03). There was also a significant association between more incorrect attempts on diagrammatic steps and lower hint use on symbolic steps (β = -1.46, t(35) = -2.32, p = .03). *
+
+##### Results
+
+Need to get `time`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
