@@ -1,30 +1,57 @@
 # gets all the variables needed to replicate the analysis in Tomo's CogSci paper
 # not done yet
 
-
 library(tidyverse)
 library(here)
 
+# Data I/O
+
 PREPOST_PATH <- here("data/prepost_cleaned.csv")
-LOG_DATA_PATH <- here("data/all_by_student_problem.txt")
+LOG_DATA_PROB_PATH <- here("data/all_by_student_problem.txt")
+LOG_DATA_STEP_PATH <- here("data/all_by_student_step.txt")
+LOG_DATA_TRAN_PATH <- here("data/all_by_transaction.txt")
+DATA_OUTPATH <- here("data/replicate.csv")
 
 prepost <- read_csv(PREPOST_PATH)
-logdata <- read_tsv(LOG_DATA_PATH)
+logdata_p <- read_tsv(LOG_DATA_PROB_PATH)
+logdata_s <- read_tsv(LOG_DATA_STEP_PATH)
+logdata_t <- read_tsv(LOG_DATA_TRAN_PATH)
 
-logdata %>%
+
+
+# Gets number of problems solved, average number of hints per step, and average
+# number of incorrects per step
+logdata_p %>%
   filter(`Anon Student Id` %in% prepost$username) %>%
   group_by(`Anon Student Id`) %>%
   summarise(num_solved = n(),
             hint = sum(Hints)/sum(Steps),
             incs = sum(Incorrects)/sum(Steps)) %>%
-  rename(username = `Anon Student Id`) -> df_logdata
+  rename(username = `Anon Student Id`) -> df_logdata_p
 
+
+
+
+
+logdata_s %>%
+  filter(`Anon Student Id` %in% prepost$username) %>%
+  mutate(used_hint = ifelse(Hints >= 1, 1, 0)) %>%
+  group_by(`Anon Student Id`, `Problem Name`) -> asdf
+
+
+
+
+
+
+
+
+# Gets the condition, pretest score (CK + PK), and posttest scores (CK and PK seperately)
 prepost %>%
   select(c(username, condition, CK_post, PK_post, CKPK_pre)) -> df_prepost
 
-df <- inner_join(df_logdata, df_prepost, by = "username")
+df <- inner_join(df_logdata_p, df_prepost, by = "username")
 
-write_csv(df, here("data/replicate.csv"))
+write_csv(df, DATA_OUTPATH)
 
 ##############
 ## NOTES
@@ -36,8 +63,8 @@ write_csv(df, here("data/replicate.csv"))
 # the time the student did the first step
 
 
-# no "bigotter" "smallrabbit" (present in prepost) in the logdata
-# but there are "smallotter" and "bigrabbit" in the logdata (but not in prepost)
+# no "bigotter" "smallrabbit" (present in prepost) in the logdata_p
+# but there are "smallotter" and "bigrabbit" in the logdata_p (but not in prepost)
 
 
 # post_pk
@@ -47,10 +74,11 @@ write_csv(df, here("data/replicate.csv"))
 # num_solved
 # incs
 # hint
-# percentage of steps with hints ***
 # time ***
 # incs_dia ***
 # time_dia ***
+
+# percentage of steps with hints ***
 
 
 ########################################################################
