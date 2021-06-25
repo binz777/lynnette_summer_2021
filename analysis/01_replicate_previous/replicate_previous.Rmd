@@ -16,8 +16,25 @@ library(tidyverse)
 library(here)
 library(corrplot)
 
+PREPOST_PATH <- here("data/prepost_cleaned.csv")
 DATA_PATH <- here("data/processed/replicate.csv")
+
+prepost <- read_csv(PREPOST_PATH)
 df <- read_csv(DATA_PATH)
+```
+
+### Mean pre/posttest scores by condition
+
+```{r, echo = T}
+
+prepost %>%
+  group_by(condition) %>%
+  summarize(pk_pre = mean(PK_pre),
+            pk_post = mean(PK_post),
+            ck_pre = mean(CK_pre),
+            ck_post = mean(CK_post),
+            ckpk_pre = mean(CKPK_pre),
+            ckpk_post = mean(CKPK_post))
 ```
 
 
@@ -108,7 +125,13 @@ df %>%
 
 ##### Results
 
-Need to get `time`
+Need to get duration.
+
+```{r}
+# mod_incs_sym <- lm(inc ~ pre + incs_dia + time_dia + num_solved)
+# mod_hint_sym <- lm(hint ~ pre + incs_dia + time_dia + num_solved)
+# mod_time_sym <- lm(time ~ pre + incs_dia + time_dia + num_solved)
+```
 
 
 

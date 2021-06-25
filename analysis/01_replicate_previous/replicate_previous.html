@@ -247,6 +247,22 @@ div.tocify {
 </div>
 
 
+<div id="mean-preposttest-scores-by-condition" class="section level3">
+<h3>Mean pre/posttest scores by condition</h3>
+<pre class="r"><code>prepost %&gt;%
+  group_by(condition) %&gt;%
+  summarize(pk_pre = mean(PK_pre),
+            pk_post = mean(PK_post),
+            ck_pre = mean(CK_pre),
+            ck_post = mean(CK_post),
+            ckpk_pre = mean(CKPK_pre),
+            ckpk_post = mean(CKPK_post))</code></pre>
+<pre><code>## # A tibble: 2 x 7
+##   condition   pk_pre pk_post ck_pre ck_post ckpk_pre ckpk_post
+##   &lt;chr&gt;        &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 alldiagram    3.45    3.67   2.82    3.30     6.27      6.97
+## 2 interleaved   2.88    2.84   2.78    2.75     5.66      5.59</code></pre>
+</div>
 <div id="correlation-matrix" class="section level3">
 <h3>Correlation Matrix</h3>
 <pre class="r"><code>df %&gt;%
@@ -360,7 +376,10 @@ mod3 &lt;- lm(hints ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, da
 </div>
 <div id="results-2" class="section level5">
 <h5>Results</h5>
-<p>Need to get <code>time</code></p>
+<p>Need to get duration.</p>
+<pre class="r"><code># mod_incs_sym &lt;- lm(inc ~ pre + incs_dia + time_dia + num_solved)
+# mod_hint_sym &lt;- lm(hint ~ pre + incs_dia + time_dia + num_solved)
+# mod_time_sym &lt;- lm(time ~ pre + incs_dia + time_dia + num_solved)</code></pre>
 </div>
 </div>
 
