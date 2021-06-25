@@ -1,3 +1,8 @@
+# Simple linear regression models to predict standardized learning gain (from pretest scores)
+# Hypothesis: students with lower prior knowledge (lower pretest scores) have greater 
+# gain (ie. students who know less learn more from the tutor and can “catch up”)
+
+
 library(tidyverse)
 library(here)
 
