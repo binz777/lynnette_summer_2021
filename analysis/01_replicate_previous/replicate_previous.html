@@ -366,7 +366,7 @@ mod2 &lt;- lm(PK_post ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, 
 <pre class="r"><code>mod1 &lt;- lm(num_solved ~ condition + CKPK_pre + condition:CKPK_pre, data = df)
 mod2 &lt;- lm(inc_sym ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
 mod3 &lt;- lm(hints ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
-mod4 &lt;- lm(adj_tot_time ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)</code></pre>
+mod4 &lt;- lm(adj_avg_tps ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)</code></pre>
 <pre class="r"><code>summary(mod1)</code></pre>
 <pre><code>## 
 ## Call:
@@ -389,6 +389,7 @@ mod4 &lt;- lm(adj_tot_time ~ condition + CKPK_pre + condition:CKPK_pre + num_sol
 ## Residual standard error: 12.97 on 59 degrees of freedom
 ## Multiple R-squared:  0.2683, Adjusted R-squared:  0.2311 
 ## F-statistic: 7.213 on 3 and 59 DF,  p-value: 0.0003331</code></pre>
+<p>The pretest score is the only significant preditor for <code>num_solved</code>. Those who are in the interleaved condition seems to be benefiting more from higher pretest scores since the coefficient for the interaction terms is positive (though it is not significant). This matches with the previous study.</p>
 <pre class="r"><code>summary(mod2)</code></pre>
 <pre><code>## 
 ## Call:
@@ -412,6 +413,7 @@ mod4 &lt;- lm(adj_tot_time ~ condition + CKPK_pre + condition:CKPK_pre + num_sol
 ## Residual standard error: 88.79 on 58 degrees of freedom
 ## Multiple R-squared:  0.1398, Adjusted R-squared:  0.0805 
 ## F-statistic: 2.357 on 4 and 58 DF,  p-value: 0.06409</code></pre>
+<p><code>num_solved</code> is the only significant predictor for the number of incorrect attempts, contrary to the previous study. This makes sense because the more problems the students solve, the more steps they encounter and the more chances they can make a mistake.</p>
 <pre class="r"><code>summary(mod3)</code></pre>
 <pre><code>## 
 ## Call:
@@ -435,39 +437,31 @@ mod4 &lt;- lm(adj_tot_time ~ condition + CKPK_pre + condition:CKPK_pre + num_sol
 ## Residual standard error: 54.71 on 58 degrees of freedom
 ## Multiple R-squared:  0.3156, Adjusted R-squared:  0.2684 
 ## F-statistic: 6.688 on 4 and 58 DF,  p-value: 0.0001698</code></pre>
+<p><code>condition</code> and the interaction term of <code>condition</code> and the pretest score are significant predictors for the number of hints used. In the previous study, only <code>condition</code> was significant.</p>
 <pre class="r"><code>summary(mod4)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = adj_tot_time ~ condition + CKPK_pre + condition:CKPK_pre + 
+## lm(formula = adj_avg_tps ~ condition + CKPK_pre + condition:CKPK_pre + 
 ##     num_solved, data = df)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -848.39 -369.89  -24.35  304.38 1400.30 
+## -9.7631 -1.8827  0.4352  1.2182 16.8677 
 ## 
 ## Coefficients:
 ##                               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                    292.814    248.767   1.177   0.2440    
-## conditioninterleaved           774.379    301.892   2.565   0.0129 *  
-## CKPK_pre                       -26.641     32.158  -0.828   0.4108    
-## num_solved                      41.441      5.315   7.797 1.34e-10 ***
-## conditioninterleaved:CKPK_pre  -47.131     44.366  -1.062   0.2925    
+## (Intercept)                   12.74267    1.68895   7.545 3.56e-10 ***
+## conditioninterleaved          10.58864    2.04964   5.166 3.07e-06 ***
+## CKPK_pre                       0.22682    0.21833   1.039 0.303186    
+## num_solved                    -0.20194    0.03609  -5.596 6.25e-07 ***
+## conditioninterleaved:CKPK_pre -1.12897    0.30121  -3.748 0.000413 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 529.6 on 58 degrees of freedom
-## Multiple R-squared:  0.5513, Adjusted R-squared:  0.5203 
-## F-statistic: 17.81 on 4 and 58 DF,  p-value: 1.373e-09</code></pre>
-<p>All three of the predictors for <code>num_solved</code> were significant. Here, however, the increase is steeper for students in the <code>alldiagram</code> condition than the <code>interleaved</code> condition (from the negative coefficient).</p>
-<pre class="r"><code>df %&gt;%
-  group_by(condition) %&gt;%
-  summarise(mean_num_solved = mean(num_solved))</code></pre>
-<pre><code>## # A tibble: 2 x 2
-##   condition   mean_num_solved
-##   &lt;chr&gt;                 &lt;dbl&gt;
-## 1 alldiagram             36.5
-## 2 interleaved            31.0</code></pre>
-<p><code>condition</code> is a significant predictor for <code>hints</code> like the previous study. Though the interaction term <code>condition:CKPK_pre</code> is a significant predictor for <code>hints</code> and <code>num_solved</code> is a significant predictor for <code>inc_sym</code>, contrary to the previous study.</p>
+## Residual standard error: 3.595 on 58 degrees of freedom
+## Multiple R-squared:  0.6455, Adjusted R-squared:  0.6211 
+## F-statistic: 26.41 on 4 and 58 DF,  p-value: 1.71e-12</code></pre>
+<p><code>condition</code>, <code>num_solved</code>, and the interaction term between condition and pretest score are significant predictors of the adjusted average time spent per step. Only <code>condition</code> was significant in the previous study.</p>
 </div>
 </div>
 <div id="how-does-anticipatory-diagrammatic-selfexplanation-scaffold-in-student-performance" class="section level3">
