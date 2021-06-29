@@ -70,8 +70,8 @@ mod1 <- lm(CK_post ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, dat
 mod2 <- lm(PK_post ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
 ```
 ```{r, echo = T}
-summary(mod1)$coefficients
-summary(mod2)$coefficients
+summary(mod1)
+summary(mod2)
 ```
 
 Here, `condition` and `condition:CKPK_pre` are not significant predictors of the posttest PK and CK scores at a significance level of 0.05, which matches with previous results. However, `condition` is a significant predictor of `PK_post` at the 0.10 significance level. Addtionally, the signs of the beta estimates for these predictors are the same as those from previous results (though need to know how `condition` was factored in the previous study).
@@ -95,13 +95,14 @@ Here, `condition` and `condition:CKPK_pre` are not significant predictors of the
 mod1 <- lm(num_solved ~ condition + CKPK_pre + condition:CKPK_pre, data = df)
 mod2 <- lm(inc_sym ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
 mod3 <- lm(hints ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
-# mod4 <- lm(time ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
+mod4 <- lm(adj_tot_time ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
 ```
 
 ```{r}
-summary(mod1)$coefficients
-summary(mod2)$coefficients
-summary(mod3)$coefficients
+summary(mod1)
+summary(mod2)
+summary(mod3)
+summary(mod4)
 ```
 
 All three of the predictors for `num_solved` were significant. Here, however, the increase is steeper for students in the `alldiagram` condition than the `interleaved` condition (from the negative coefficient).
@@ -125,7 +126,7 @@ df %>%
 
 ##### Results
 
-Need to get duration.
+Unable to get the time spent on diagrammic steps because there are no timestamps for the steps which students answers correctly on the first try. 
 
 ```{r}
 # mod_incs_sym <- lm(inc ~ pre + incs_dia + time_dia + num_solved)

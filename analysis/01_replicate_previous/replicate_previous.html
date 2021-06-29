@@ -304,20 +304,52 @@ div.tocify {
 <h5>Results</h5>
 <pre class="r"><code>mod1 &lt;- lm(CK_post ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
 mod2 &lt;- lm(PK_post ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)</code></pre>
-<pre class="r"><code>summary(mod1)$coefficients</code></pre>
-<pre><code>##                                  Estimate Std. Error    t value   Pr(&gt;|t|)
-## (Intercept)                    1.73502261 0.66045052  2.6270289 0.01100091
-## conditioninterleaved          -0.60167764 0.80149394 -0.7506952 0.45587101
-## CKPK_pre                       0.17201043 0.08537725  2.0147105 0.04857913
-## num_solved                     0.01367656 0.01411149  0.9691793 0.33648008
-## conditioninterleaved:CKPK_pre  0.03877484 0.11778598  0.3291974 0.74319229</code></pre>
-<pre class="r"><code>summary(mod2)$coefficients</code></pre>
-<pre><code>##                                   Estimate Std. Error    t value     Pr(&gt;|t|)
-## (Intercept)                    0.511538692 0.80747315  0.6335055 5.288939e-01
-## conditioninterleaved          -1.796802377 0.97991419 -1.8336324 7.184115e-02
-## CKPK_pre                       0.491423207 0.10438304  4.7078837 1.600413e-05
-## num_solved                     0.004310179 0.01725284  0.2498243 8.036060e-01
-## conditioninterleaved:CKPK_pre  0.214921710 0.14400627  1.4924469 1.410019e-01</code></pre>
+<pre class="r"><code>summary(mod1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = CK_post ~ condition + CKPK_pre + condition:CKPK_pre + 
+##     num_solved, data = df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.3904 -0.6621  0.0735  0.8776  3.2976 
+## 
+## Coefficients:
+##                               Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)                    1.73502    0.66045   2.627   0.0110 *
+## conditioninterleaved          -0.60168    0.80149  -0.751   0.4559  
+## CKPK_pre                       0.17201    0.08538   2.015   0.0486 *
+## num_solved                     0.01368    0.01411   0.969   0.3365  
+## conditioninterleaved:CKPK_pre  0.03877    0.11779   0.329   0.7432  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.406 on 58 degrees of freedom
+## Multiple R-squared:   0.24,  Adjusted R-squared:  0.1876 
+## F-statistic:  4.58 on 4 and 58 DF,  p-value: 0.00278</code></pre>
+<pre class="r"><code>summary(mod2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = PK_post ~ condition + CKPK_pre + condition:CKPK_pre + 
+##     num_solved, data = df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.0894 -1.1655  0.2444  1.0623  3.9538 
+## 
+## Coefficients:
+##                               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                    0.51154    0.80747   0.634   0.5289    
+## conditioninterleaved          -1.79680    0.97991  -1.834   0.0718 .  
+## CKPK_pre                       0.49142    0.10438   4.708  1.6e-05 ***
+## num_solved                     0.00431    0.01725   0.250   0.8036    
+## conditioninterleaved:CKPK_pre  0.21492    0.14401   1.492   0.1410    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.719 on 58 degrees of freedom
+## Multiple R-squared:  0.574,  Adjusted R-squared:  0.5447 
+## F-statistic: 19.54 on 4 and 58 DF,  p-value: 3.151e-10</code></pre>
 <p>Here, <code>condition</code> and <code>condition:CKPK_pre</code> are not significant predictors of the posttest PK and CK scores at a significance level of 0.05, which matches with previous results. However, <code>condition</code> is a significant predictor of <code>PK_post</code> at the 0.10 significance level. Addtionally, the signs of the beta estimates for these predictors are the same as those from previous results (though need to know how <code>condition</code> was factored in the previous study).</p>
 </div>
 </div>
@@ -334,27 +366,98 @@ mod2 &lt;- lm(PK_post ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, 
 <pre class="r"><code>mod1 &lt;- lm(num_solved ~ condition + CKPK_pre + condition:CKPK_pre, data = df)
 mod2 &lt;- lm(inc_sym ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
 mod3 &lt;- lm(hints ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
-# mod4 &lt;- lm(time ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)</code></pre>
-<pre class="r"><code>summary(mod1)$coefficients</code></pre>
-<pre><code>##                                 Estimate Std. Error    t value     Pr(&gt;|t|)
-## (Intercept)                   22.5727973  5.3376288  4.2289935 8.284389e-05
-## conditioninterleaved          -6.1150384  7.3513924 -0.8318204 4.088644e-01
-## CKPK_pre                       2.1348677  0.7370025  2.8966901 5.283249e-03
-## conditioninterleaved:CKPK_pre  0.4416611  1.0851403  0.4070083 6.854748e-01</code></pre>
-<pre class="r"><code>summary(mod2)$coefficients</code></pre>
-<pre><code>##                                Estimate Std. Error    t value   Pr(&gt;|t|)
-## (Intercept)                   25.895273 41.7089962  0.6208558 0.53712677
-## conditioninterleaved          70.942133 50.6162182  1.4015692 0.16637268
-## CKPK_pre                      -6.277774  5.3917729 -1.1643246 0.24905948
-## num_solved                     2.090501  0.8911736  2.3457845 0.02242752
-## conditioninterleaved:CKPK_pre -5.134738  7.4384602 -0.6902959 0.49276131</code></pre>
-<pre class="r"><code>summary(mod3)$coefficients</code></pre>
-<pre><code>##                                  Estimate Std. Error    t value    Pr(&gt;|t|)
-## (Intercept)                    10.5068850 25.7013814  0.4088062 0.684187440
-## conditioninterleaved          101.6349092 31.1900752  3.2585657 0.001874864
-## CKPK_pre                       -4.4216789  3.3224490 -1.3308493 0.188446930
-## num_solved                      0.9473614  0.5491475  1.7251491 0.089825867
-## conditioninterleaved:CKPK_pre  -9.3588031  4.5836323 -2.0417875 0.045729516</code></pre>
+mod4 &lt;- lm(adj_tot_time ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)</code></pre>
+<pre class="r"><code>summary(mod1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = num_solved ~ condition + CKPK_pre + condition:CKPK_pre, 
+##     data = df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -33.921  -7.880   3.507   9.090  23.236 
+## 
+## Coefficients:
+##                               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                    22.5728     5.3376   4.229 8.28e-05 ***
+## conditioninterleaved           -6.1150     7.3514  -0.832  0.40886    
+## CKPK_pre                        2.1349     0.7370   2.897  0.00528 ** 
+## conditioninterleaved:CKPK_pre   0.4417     1.0851   0.407  0.68547    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 12.97 on 59 degrees of freedom
+## Multiple R-squared:  0.2683, Adjusted R-squared:  0.2311 
+## F-statistic: 7.213 on 3 and 59 DF,  p-value: 0.0003331</code></pre>
+<pre class="r"><code>summary(mod2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = inc_sym ~ condition + CKPK_pre + condition:CKPK_pre + 
+##     num_solved, data = df)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -96.24 -52.97 -20.04  13.84 321.15 
+## 
+## Coefficients:
+##                               Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)                    25.8953    41.7090   0.621   0.5371  
+## conditioninterleaved           70.9421    50.6162   1.402   0.1664  
+## CKPK_pre                       -6.2778     5.3918  -1.164   0.2491  
+## num_solved                      2.0905     0.8912   2.346   0.0224 *
+## conditioninterleaved:CKPK_pre  -5.1347     7.4385  -0.690   0.4928  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 88.79 on 58 degrees of freedom
+## Multiple R-squared:  0.1398, Adjusted R-squared:  0.0805 
+## F-statistic: 2.357 on 4 and 58 DF,  p-value: 0.06409</code></pre>
+<pre class="r"><code>summary(mod3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = hints ~ condition + CKPK_pre + condition:CKPK_pre + 
+##     num_solved, data = df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -94.151 -28.538  -7.466  13.236 212.612 
+## 
+## Coefficients:
+##                               Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)                    10.5069    25.7014   0.409  0.68419   
+## conditioninterleaved          101.6349    31.1901   3.259  0.00187 **
+## CKPK_pre                       -4.4217     3.3224  -1.331  0.18845   
+## num_solved                      0.9474     0.5491   1.725  0.08983 . 
+## conditioninterleaved:CKPK_pre  -9.3588     4.5836  -2.042  0.04573 * 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 54.71 on 58 degrees of freedom
+## Multiple R-squared:  0.3156, Adjusted R-squared:  0.2684 
+## F-statistic: 6.688 on 4 and 58 DF,  p-value: 0.0001698</code></pre>
+<pre class="r"><code>summary(mod4)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = adj_tot_time ~ condition + CKPK_pre + condition:CKPK_pre + 
+##     num_solved, data = df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -848.39 -369.89  -24.35  304.38 1400.30 
+## 
+## Coefficients:
+##                               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                    292.814    248.767   1.177   0.2440    
+## conditioninterleaved           774.379    301.892   2.565   0.0129 *  
+## CKPK_pre                       -26.641     32.158  -0.828   0.4108    
+## num_solved                      41.441      5.315   7.797 1.34e-10 ***
+## conditioninterleaved:CKPK_pre  -47.131     44.366  -1.062   0.2925    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 529.6 on 58 degrees of freedom
+## Multiple R-squared:  0.5513, Adjusted R-squared:  0.5203 
+## F-statistic: 17.81 on 4 and 58 DF,  p-value: 1.373e-09</code></pre>
 <p>All three of the predictors for <code>num_solved</code> were significant. Here, however, the increase is steeper for students in the <code>alldiagram</code> condition than the <code>interleaved</code> condition (from the negative coefficient).</p>
 <pre class="r"><code>df %&gt;%
   group_by(condition) %&gt;%
@@ -376,7 +479,7 @@ mod3 &lt;- lm(hints ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, da
 </div>
 <div id="results-2" class="section level5">
 <h5>Results</h5>
-<p>Need to get duration.</p>
+<p>Unable to get the time spent on diagrammic steps because there are no timestamps for the steps which students answers correctly on the first try.</p>
 <pre class="r"><code># mod_incs_sym &lt;- lm(inc ~ pre + incs_dia + time_dia + num_solved)
 # mod_hint_sym &lt;- lm(hint ~ pre + incs_dia + time_dia + num_solved)
 # mod_time_sym &lt;- lm(time ~ pre + incs_dia + time_dia + num_solved)</code></pre>
