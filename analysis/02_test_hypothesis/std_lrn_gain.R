@@ -57,7 +57,7 @@ mod8 <- lm(s_ck ~ CK_pre, data = df2) # β = -.166, p = .013
 mod9 <- lm(s_ck ~ PK_pre, data = df2)
 
 # It seems like people who did well in the CK component of the pretest
-# would have less standardized learning gain in CK for both the All-Diagram
-# and Interleaved condition. Additionally, students who have higher pretest CK 
-# scores seems to have more standardized learning gain in PK in the 
-# Interleaved condition.
+# would have less standardized learning gain in CK in general, which 
+# supports our hypothesis. Additionally, students who have higher pretest CK 
+# scores seems to have more standardized learning gain (less in magnitude in 
+# comparison to the previous finding) in PK in the Interleaved condition.
