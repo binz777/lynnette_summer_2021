@@ -1,5 +1,4 @@
 # Gets all the variables needed to replicate the analysis in Tomo's CogSci paper
-# not done yet
 
 library(tidyverse)
 library(here)
@@ -48,8 +47,7 @@ logdata_s %>%
   rename(username = `Anon Student Id`) -> df3 # no one used hints on diagrammatic steps
 
 
-# Gets the time spent
-
+# Gets the time spent on each problem
 duration <- function(vec) 
 {
   vec <- sort(vec)
@@ -70,14 +68,9 @@ logdata_t %>%
   mutate(time_stamp = as.POSIXlt(`CF (tool_event_time)`, 
                                  format = "%Y-%m-%d %H:%M:%OS", 
                                  tz = "UTC")) %>%
-  summarise(t = max(time_stamp) - min(time_stamp),
-            a = duration(time_stamp)) %>%
-  rename(username = `Anon Student Id`) -> dddd
-
-df4 <- dddd %>%
-  group_by(username) %>%
-  summarise(tot_time = sum(t),
-            adj_tot_time = sum(a))
+  summarise(tot_time = max(time_stamp) - min(time_stamp),
+            adj_tot_time = duration(time_stamp)) %>%
+  rename(username = `Anon Student Id`) -> df4
 
 
 # Gets the condition, pretest score (CK + PK), and posttest scores (CK and PK seperately)
@@ -87,9 +80,8 @@ prepost %>%
 
 # Getting everything together
 df_a <- inner_join(df1, df2, by = "username")
-df_b <- inner_join(df3, df4, by = "username")
-df_c <- inner_join(df_a, df_b, by = "username")
-df <- inner_join(df_c, df5, by = "username") %>%
+df_b <- inner_join(df3, df5, by = "username")
+df <- inner_join(df_a, df_b, by = "username") %>%
   mutate(perc_hint_steps = steps_with_hints / tot_steps) %>%
   select(-c(tot_steps, steps_with_hints))
 
