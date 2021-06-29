@@ -49,8 +49,20 @@ logdata_s %>%
 
 
 # Gets the time spent on each problem
-# Ask what to do with problems done over days
-# Ask about avg time for diagrammatic and symbolic steps
+
+duration <- function(vec) 
+{
+  vec <- sort(vec)
+  d <- 0
+  len <- length(vec)
+  for (i in 1:(len - 1))
+  {
+    dif <- vec[i + 1] - vec[i]
+    d <- d + ifelse(as.double(dif) > 40, 40, dif)
+  }
+  return(d)
+}
+
 logdata_t %>%
   filter(`Anon Student Id` %in% prepost$username,
          !is.na(`CF (tool_event_time)`)) %>%
@@ -58,7 +70,8 @@ logdata_t %>%
   mutate(time_stamp = as.POSIXlt(`CF (tool_event_time)`, 
                                  format = "%Y-%m-%d %H:%M:%OS", 
                                  tz = "UTC")) %>%
-  summarise(tot_time = max(time_stamp) - min(time_stamp)) %>%
+  summarise(tot_time = max(time_stamp) - min(time_stamp),
+            adj_tot_time = duration(time_stamp)) %>%
   rename(username = `Anon Student Id`) -> df4
 
 
@@ -97,10 +110,9 @@ write_csv(df, DATA_OUTPATH)
 # num_solved
 # incs
 # hint
-# time *
+# time
 # incs_dia
-# time_dia ***
-
+# time_dia *** can't get this because correct first tries don't have timestamp
 # percentage of steps with hints
 
 
@@ -117,13 +129,11 @@ write_csv(df, DATA_OUTPATH)
 # mod_num_solved <- lm(num_solved ~ cond + pre + cond:pre)
 # mod_inc <- lm(inc ~ cond + pre + cond:pre + num_solved)
 # mod_hint <- lm(hint ~ cond + pre + cond:pre + num_solved)
-
-
-
-# can't do yet (missing time and time_dia)
-
 # mod_time <- lm(time ~ cond + pre + cond:pre + num_solved)
-# 
+
+
+# can't do because can't get time_dia
+
 # mod_inc <- lm(inc ~ pre + incs_dia + time_dia + num_solved)
 # mod_hint <- lm(hint ~ pre + incs_dia + time_dia + num_solved)
 # mod_time <- lm(time ~ pre + incs_dia + time_dia + num_solved)
