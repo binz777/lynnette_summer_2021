@@ -7,6 +7,9 @@ library(here)
 PREPOST_PATH <- here("data/prepost_cleaned.csv")
 prepost <- read_csv(PREPOST_PATH)
 
+pretest <- prepost %>%
+  select(contains("_pre"), condition)
+
 # Table of means
 prepost %>%
   group_by(condition) %>%

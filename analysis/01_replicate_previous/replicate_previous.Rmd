@@ -26,7 +26,6 @@ df <- read_csv(DATA_PATH)
 ### Mean pre/posttest scores by condition
 
 ```{r, echo = T}
-
 prepost %>%
   group_by(condition) %>%
   summarize(pk_pre = mean(PK_pre),
