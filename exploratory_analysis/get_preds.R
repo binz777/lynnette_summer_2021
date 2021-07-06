@@ -43,7 +43,8 @@ logdata_s %>%
   group_by(`Anon Student Id`) %>%
   summarise(inc_dia = sum(Incorrects[grepl("selectd", `KC (Default)`)]),
             inc_sym = sum(Incorrects[!grepl("selectd", `KC (Default)`)]),
-            hints = sum(Hints)) %>%
+            hints = sum(Hints),
+            first_try = sum(`First Attempt` == "correct")) %>%
   rename(username = `Anon Student Id`) -> df3 # no one used hints on diagrammatic steps
 
 
@@ -89,6 +90,7 @@ df_b <- inner_join(df3, df4, by = "username")
 df_c <- inner_join(df_a, df_b, by = "username") 
 df <- inner_join(df_c, df5, by = "username") %>%
   mutate(perc_hint_steps = steps_with_hints / tot_steps,
+         perc_first_try = first_try /tot_steps,
          avg_time_per_step = tot_time / tot_steps,
          adj_avg_tps = adj_tot_time / tot_steps) %>%
   select(-c(tot_steps, steps_with_hints))
@@ -120,6 +122,7 @@ write_csv(df, DATA_OUTPATH)
 # incs_dia
 # time_dia *** can't get this because correct first tries don't have timestamp
 # percentage of steps with hints
+# percnetage of steps correct on the first try
 
 
 ########################################################################
