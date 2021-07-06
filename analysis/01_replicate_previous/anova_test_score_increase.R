@@ -10,11 +10,11 @@ prepost = read_csv("C://Users/wuhan/Documents/cs/cmu-lynnette-research/prepost_c
 # gather columns into long format
 #adjust column names and filter based on needs
 prepost_df <- prepost %>% 
-  filter(condition == "alldiagram") %>%
+  filter(condition == "interleaved") %>%
   gather(key="test", value="score", CK_pre, CK_post) %>% 
   select(c(username, test, score))
 prepost_df <- prepost %>% 
-  filter(condition == "alldiagram") %>%
+  filter(condition == "interleaved") %>%
   gather(key="test", value="score", PK_pre, PK_post) %>% 
   select(c(username, test, score))
 # summary statistics
@@ -38,10 +38,11 @@ ggqqplot(prepost_df, "score", facet.by = "test") # might be due to the categoric
 res.aov <- anova_test(data = prepost_df, dv = score, wid = username, within = test)
 get_anova_table(res.aov) 
 # for ALL data (both conditions)
-# p = .206 for CK
-# found positive but non-significant pretest-posttest gain for the conceptual knowledge items
+# p = .206 for CK, found positive but non-significant pretest-posttest gain for the conceptual knowledge items
 # p = .662 for PK
 # for alldiagram condition
 # p = 0.062 for CK
 # p = 0.546 for PK
 # for interleaved condition
+# p = 0.904 for CK
+# p = 0.895 for PK
