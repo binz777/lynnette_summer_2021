@@ -16,37 +16,38 @@ logdata = read_tsv("C://Users/wuhan/Documents/cs/cmu-lynnette-research/all_by_st
 student_step = read_tsv("C://Users/wuhan/Documents/cs/cmu-lynnette-research/all_by_student_step_csv.txt")
 
 logdata %>%
-#  mutate(problem_prefix = sub("\\-.*", "", `Problem Name`)) %>%
+  mutate(problem_prefix = sub("\\-.*", "", `Problem Name`)) %>%
+  mutate(proportion_correct_first = `Correct First Attempts`/Steps) %>% 
   rename(username = `Anon Student Id`) %>%
   rename(condition = `Problem Hierarchy`)%>%
   rename(avg_assistance = `Avg Assistance Score`)-> df_logdata
 
-
 interleaved_df <- filter(df_logdata, grepl("Yellow",condition))
 alldiagram_df <- filter(df_logdata, grepl("Red",condition))
 
-interleaved_df %>% filter(`Problem Name` %in% alldiagram_df$`Problem Name`) -> interleaved_df
-# 631 student problems in interleaved
-alldiagram_df %>% filter(`Problem Name` %in% interleaved_df$`Problem Name`) -> alldiagram_df
-# 787 student problems in alldiagram
+# Choosing even rows aka same problem but with diagram and without
+interleaved_df %>% filter(row_number() %% 2 == 0) -> interleaved_df_evens ## Select even rows
+alldiagram_df %>% filter(row_number() %% 2 == 0) -> alldiagram_df_evens ## Select even rows
 
-barplot <- ggplot(data=interleaved_df[1:10,], aes(x=`Problem Name`, y=avg_assistance)) +
-  geom_bar(stat="identity") + ylim(0, 10)
+# Now we can see both have the same problems
+# 606 questions in interleaved, 721 in all diagram
+interleaved_df_evens$`Problem Name`[1:10]
+alldiagram_df_evens$`Problem Name`[1:10]
+
+# Compare Avg Assistance Score across conditions
+barplot <- ggplot(data=interleaved_df_evens[1:18,], aes(x=`Problem Name`, y=avg_assistance)) +
+  geom_bar(stat="identity") + ylim(0, 2)
 barplot
-barplot2 <- ggplot(data=alldiagram_df[1:10,], aes(x=`Problem Name`, y=avg_assistance)) +
-  geom_bar(stat="identity") + ylim(0, 10)
+barplot2 <- ggplot(data=alldiagram_df_evens[1:18,], aes(x=`Problem Name`, y=avg_assistance)) +
+  geom_bar(stat="identity") + ylim(0, 2)
 barplot2
 
 # combine these 2 in order to run anova test
-combined_df = rbind(interleaved_df, alldiagram_df)
+combined_df = rbind(interleaved_df_evens, alldiagram_df_evens)
 combined_df$condition <- ifelse(grepl("Yellow", combined_df$condition), "interleaved", "alldiagram" )
 
 
 # summary stats
-interleaved_df %>% 
-  get_summary_stats(avg_assistance, type="mean_sd")
-alldiagram_df %>% 
-  get_summary_stats(avg_assistance, type="mean_sd")
 combined_df %>%
   group_by(condition) %>%
   get_summary_stats(avg_assistance, type="mean_sd")
@@ -57,4 +58,34 @@ stat.test <- combined_df %>%
   t_test(avg_assistance ~ condition, var.equal = TRUE) %>%
   add_significance()
 stat.test
-# the interleaved group used more hints w p = 0.0118, p < 0.05
+# the interleaved group used more hints w p = 0.000025, p < 0.0001
+
+# Compare proportion of steps correct on the first attempt
+# = (# steps correct on the first attempt)/(# steps)
+
+# Compare Proportion Correct on First Attempt across conditions
+barplot3 <- ggplot(data=interleaved_df_evens[20:40,], aes(x=`Problem Name`, y=proportion_correct_first)) +
+  geom_bar(stat="identity") + ylim(0, 1)
+barplot3
+barplot4 <- ggplot(data=alldiagram_df_evens[20:40,], aes(x=`Problem Name`, y=proportion_correct_first)) +
+  geom_bar(stat="identity") + ylim(0, 1)
+barplot4
+
+# based on the box plot, it seems like the majority of all diagram values are really close to 1
+boxplot <- ggplot(data=combined_df, aes(x=condition, y=proportion_correct_first)) +
+  geom_boxplot()
+boxplot
+
+# summary stats
+combined_df %>%
+  group_by(condition) %>%
+  get_summary_stats(proportion_correct_first, type="mean_sd")
+
+# t test to check for difference
+stat.test <- combined_df %>% 
+  t_test(proportion_correct_first ~ condition, var.equal = TRUE) %>%
+  add_significance()
+stat.test
+# the all diagram group got more correct on the first attempt w 
+# p = 5.87e-9, p < 0.0001
+
