@@ -37,14 +37,14 @@ interleaved_df <- filter(df_logdata, grepl("Yellow",condition))
 alldiagram_df <- filter(df_logdata, grepl("Red",condition))
 
 # Choosing even rows aka same problem but with diagram and without
-interleaved_df %>% filter(row_number() %% 2 == 0) -> interleaved_df_evens ## Select even rows
-alldiagram_df %>% filter(row_number() %% 2 == 0) -> alldiagram_df_evens ## Select even rows
-interleaved_df %>% filter(row_number() %% 2 == 1) -> interleaved_df_odds ## Select even rows
-alldiagram_df %>% filter(row_number() %% 2 == 1) -> alldiagram_df_odds ## Select even rows
-
+# it checks diagram/no diagram because even/odd rows don't necessarily correspond 
+interleaved_df %>% filter(grepl('diagrams-first', `Problem Name`)) -> interleaved_df_odds
+interleaved_df %>% filter(grepl('no-diagrams', `Problem Name`)) -> interleaved_df_evens
+alldiagram_df %>% filter(alldiagram_df$problem_prefix %in% interleaved_df_odds$problem_prefix) -> alldiagram_df_odds
+alldiagram_df %>% filter(alldiagram_df$problem_prefix %in% interleaved_df_evens$problem_prefix) -> alldiagram_df_evens
+# all diagram numbers are not consistent with the total:(
 
 # Now we can see both have the same problems
-# 606 questions in interleaved, 721 in all diagram
 interleaved_df_evens$`Problem Name`[1:10]
 alldiagram_df_evens$`Problem Name`[1:10]
 
@@ -55,8 +55,11 @@ all_evens_df = rbind(interleaved_df_evens, alldiagram_df_evens)
 all_evens_df$condition <- ifelse(grepl("Yellow", all_evens_df$condition), "interleaved", "alldiagram" )
 
 # adding parity column to each condition
-alldiagram_df$parity <- rep(c("odd", "even"), length.out=nrow(alldiagram_df))
-interleaved_df$parity <- rep(c("odd", "even"), length.out=nrow(interleaved_df))
+# can't just alternate, need to use this ifelse
+interleaved_df$parity <- ifelse(grepl("diagrams-first", interleaved_df$`Problem Name`), "odd", "even" )
+# if the problem prefix is in interleaved evens, it's no diagram aka even
+alldiagram_df$parity <- ifelse(alldiagram_df$problem_prefix %in% interleaved_df_evens$problem_prefix, "even", "odd")
+# check for correctneess
 interleaved_df %>% select("parity", `Problem Name`)
 
 # hypothesis: students in both conditions use equal amount of hints 
@@ -89,13 +92,17 @@ stat.test
 
 # hypothesis: students in the diagram condition use less hints on the even problems 
 # than the odd problems (because they learn from the odd problems)
+# summary stats
+alldiagram_df %>%
+  group_by(parity) %>%
+  get_summary_stats(Hints, type="mean_sd")
 # t test
 stat.test <- alldiagram_df %>% 
   t_test(Hints ~ parity, var.equal = TRUE) %>%
   add_significance()
 stat.test
-# no significant difference between odd an even problem hint usage
-# in the all diagram condition
+# students use significantly less hints on even problems
+# than odd problems in the all diagram condition
 
 # hypothesis: students in the interleaved condition use less hints on the even problems 
 # than the odd problems (because they learn from the odd problems)
@@ -109,5 +116,5 @@ stat.test <- interleaved_df %>%
   t_test(Hints ~ parity, var.equal = TRUE) %>%
   add_significance()
 stat.test
-# no significant difference between odd and even problem hint usage
+# students use significantly less hints on even than odd problems
 # in the interleaved condition
