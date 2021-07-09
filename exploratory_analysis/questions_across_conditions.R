@@ -62,7 +62,6 @@ stat.test
 
 # Compare proportion of steps correct on the first attempt
 # = (# steps correct on the first attempt)/(# steps)
-
 # Compare Proportion Correct on First Attempt across conditions
 barplot3 <- ggplot(data=interleaved_df_evens[20:40,], aes(x=`Problem Name`, y=proportion_correct_first)) +
   geom_bar(stat="identity") + ylim(0, 1)
@@ -88,4 +87,28 @@ stat.test <- combined_df %>%
 stat.test
 # the all diagram group got more correct on the first attempt w 
 # p = 5.87e-9, p < 0.0001
+
+# Compare # hints used across conditions 
+barplot5 <- ggplot(data=interleaved_df_evens, aes(x=`Problem Name`, y=Hints)) +
+  geom_bar(stat="identity") + ylim(0, 200)
+barplot5
+barplot6 <- ggplot(data=alldiagram_df_evens, aes(x=`Problem Name`, y=Hints)) +
+  geom_bar(stat="identity") + ylim(0, 200)
+barplot6
+
+#boxplot2 <- ggplot(data=combined_df, aes(x=condition, y=Hints)) +
+#  geom_boxplot()
+#boxplot2
+
+# summary stats
+combined_df %>%
+  group_by(condition) %>%
+  get_summary_stats(Hints, type="mean_sd")
+
+# t test to check for difference
+stat.test <- combined_df %>% 
+  t_test(Hints ~ condition, var.equal = TRUE) %>%
+  add_significance()
+stat.test
+# the interleaved group used more hints with p = 1.8e-6, p < 0.0001
 
