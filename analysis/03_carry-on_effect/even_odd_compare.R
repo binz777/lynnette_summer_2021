@@ -1,3 +1,5 @@
+# Some analysis on even/odd problems between/across conditions
+
 library(tidyverse)
 library(here)
 
@@ -5,12 +7,10 @@ library(here)
 PREPOST_PATH <- here("data/prepost_cleaned.csv")
 LOG_DATA_PROB_PATH <- here("data/all_by_student_problem.txt")
 LOG_DATA_STEP_PATH <- here("data/all_by_student_step.txt")
-LOG_DATA_TRAN_PATH <- here("data/all_by_transaction.txt")
 
 prepost <- read_csv(PREPOST_PATH)
 logdata_p <- read_tsv(LOG_DATA_PROB_PATH)
 logdata_s <- read_tsv(LOG_DATA_STEP_PATH)
-logdata_t <- read_tsv(LOG_DATA_TRAN_PATH)
 
 # Groups by parity and condition and gets the predictors used for analyses
 foo <- function(num, cond)
@@ -25,14 +25,17 @@ foo <- function(num, cond)
     return("odd_dia")
 }
 
-logdata_p %>%
-  filter(`Anon Student Id` %in% prepost$username,
-         `Problem View` == 1) %>%
-  rename(username = `Anon Student Id`) %>%
-  group_by(username) %>%
-  mutate(prob_num = row_number()) %>%
-  inner_join(select(prepost, c("username", "condition")), by = "username") %>%
-  mutate(group = unlist(map2(prob_num, condition, foo))) -> df_p
+### Filters `Problem View` == 1
+# logdata_p %>%
+#   filter(`Anon Student Id` %in% prepost$username,
+#          `Problem View` == 1) %>%
+#   rename(username = `Anon Student Id`) %>%
+#   group_by(username) %>%
+#   mutate(prob_num = row_number()) %>%
+#   inner_join(select(prepost, c("username", "condition")), by = "username") %>%
+#   mutate(group = unlist(map2(prob_num, condition, foo))) -> df_p
+
+logdata_p
 
 df_p %>%
   group_by(username, group) %>%
@@ -95,6 +98,10 @@ odd_int <- filter(df, group == "odd_int")
 # Hypothesis: Students in both conditions performs the same on even problems
 t.test(eve_dia$perc_first_try, eve_int$perc_first_try)
 # Students in the Diagram condition did significantly better on even problems
+
+# Hypothesis: Students in both conditions performs the same on odd problems
+t.test(odd_dia$perc_first_try, odd_int$perc_first_try)
+# Students in the Diagram condition did significantly better on odd problems
 
 # Hypothesis: Students in the Diagram condition does better on the even problems 
 # than the odd problems (because they should learn from the odd problems)
