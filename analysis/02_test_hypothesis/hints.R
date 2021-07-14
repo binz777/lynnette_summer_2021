@@ -28,14 +28,27 @@ nrow(student_step) # 18594 - removed 14 rows with NA or .
 
 # temporarily filter out all problem views > 1, deletes 93 rows
 # only around 2% of rows are problem view > 1
+# also filter out students who didn't complete pre and post (2655->2047 rows)
 logdata %>%
   mutate(problem_prefix = sub("\\-.*", "", `Problem Name`)) %>%
   rename(username = `Anon Student Id`) %>%
+  filter(username %in% prepost$username) %>%
   rename(condition = `Problem Hierarchy`) %>%
   filter(!`Problem View`>1 )-> df_logdata
 
 interleaved_df <- filter(df_logdata, grepl("Yellow",condition))
 alldiagram_df <- filter(df_logdata, grepl("Red",condition))
+
+# SPLITTING EVEN/ODD ROWS
+# for each of these problems, the bonus level problem is the same but either
+# with/without diagrams, so I added additional filtering
+# for these specific cases
+# now totals are consistent! evens = 702, odds = 700
+interleaved_df_odds %>% 
+  filter(interleaved_df_odds$problem_prefix %in% interleaved_df_evens$problem_prefix) %>%
+  select(problem_prefix) -> shared_problems
+unique(shared_problems)
+# 4x+1=x+10, 8x+3=5+6x, 6x+1=13+2x problems are in both even and odd
 
 # Choosing even rows aka same problem but with diagram and without
 # it checks diagram/no diagram because even/odd rows don't necessarily correspond 
@@ -55,17 +68,6 @@ alldiagram_df %>%
   filter(!(grepl('Level 8', condition) & problem_prefix == "8xplus3eq5plus6x")) %>%
   filter(!(grepl('Bonus Level', condition) & problem_prefix == "8xplus3eq5plus6x")) ->
   alldiagram_df_evens
-# all diagram numbers are not consistent with the total:(
-
-# 4x+1=x+10, 8x+3=5+6x, 6x+1=13+2x problems are in both even and odd
-interleaved_df_odds %>% 
-  filter(interleaved_df_odds$problem_prefix %in% interleaved_df_evens$problem_prefix) %>%
-  select(problem_prefix) -> shared_problems
-unique(shared_problems)
-# for each of these, the bonus level problem is the same but either
-# with/without diagrams, so I added additional filtering
-# for these specific cases
-# now totals are consistent! evens = 702, odds = 700
 
 # Now we can see both have the same problems
 interleaved_df_evens$`Problem Name`[1:10]
@@ -85,6 +87,7 @@ alldiagram_df$parity <- ifelse(alldiagram_df$problem_prefix %in% interleaved_df_
 # check for correctneess
 interleaved_df %>% select("parity", `Problem Name`)
 
+# BEGIN T TESTS
 # hypothesis: students in both conditions use equal amount of hints 
 # on odd problems
 
