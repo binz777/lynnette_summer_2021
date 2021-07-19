@@ -1,0 +1,109 @@
+---
+title: '"Carry-on effect analysis with proportion of steps correct on the first attempt"'
+author: "Bin & Lizzy"
+date: "7/12/2021"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    toc_depth: 6
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(corrplot)
+
+PREPOST_PATH <- here("data/prepost_cleaned.csv")
+DATA_PATH <- here("data/processed/even_odd_metrics.csv")
+
+prepost <- read_csv(PREPOST_PATH)
+df <- read_csv(DATA_PATH)
+
+eve_dia <- filter(df, group == "eve_dia")
+eve_int <- filter(df, group == "eve_int")
+odd_dia <- filter(df, group == "odd_dia")
+odd_int <- filter(df, group == "odd_int")
+```
+
+## Visualizing Performance
+```{r}
+ggplot(data = odd_int, 
+       aes(x = reorder(username, -prop_first_try), y = prop_first_try)) +
+  geom_col(fill = "royalblue") + 
+  theme(axis.text.x = element_text(angle = 90),
+        plot.title = element_text(hjust = 0.5)) + 
+  ggtitle("Interleaved/Odd", ) +
+  xlab("Student") + 
+  ylab("Proporion of Steps Correct on First Attempt")
+
+ggplot(data = eve_int, 
+       aes(x = reorder(username, -prop_first_try), y = prop_first_try)) +
+  geom_col(fill = "royalblue") + 
+  theme(axis.text.x = element_text(angle = 90),
+        plot.title = element_text(hjust = 0.5)) + 
+  ggtitle("Interleaved/Even", ) +
+  xlab("Student") + 
+  ylab("Proporion of Steps Correct on First Attempt")
+
+ggplot(data = odd_dia, 
+       aes(x = reorder(username, -prop_first_try), y = prop_first_try)) +
+  geom_col(fill = "royalblue") + 
+  theme(axis.text.x = element_text(angle = 90),
+        plot.title = element_text(hjust = 0.5)) + 
+  ggtitle("Diagram/Odd", ) +
+  xlab("Student") + 
+  ylab("Proporion of Steps Correct on First Attempt")
+
+ggplot(data = eve_dia, 
+       aes(x = reorder(username, -prop_first_try), y = prop_first_try)) +
+  geom_col(fill = "royalblue") + 
+  theme(axis.text.x = element_text(angle = 90),
+        plot.title = element_text(hjust = 0.5)) + 
+  ggtitle("Diagram/Even", ) +
+  xlab("Student") + 
+  ylab("Proporion of Steps Correct on First Attempt")
+```
+
+## Interleaved/Even against Interleaved/Odd
+
+### Graphical Comparison
+
+```{r}
+ggplot(union(eve_int, odd_int),
+       aes(x = prop_first_try, fill = group)) +
+  geom_histogram(alpha=0.4, position="identity") +
+  xlab("Proporion of Steps Correct on First Attempt") + 
+  ylab("Frequency")
+```
+
+### Hypothesis Testing
+Students in the Interleaved condition does better on the even problems than the odd problems (because they also should learn from the odd problems)
+```{r}
+t.test(eve_int$prop_first_try, odd_int$prop_first_try)
+```
+
+
+
+## Interleaved/Even vs. Diagram/Even
+
+### Visualization
+
+### Hypothesis Testing
+Students in both conditions performs the same on even problems
+```{r}
+t.test(eve_int$prop_first_try, eve_dia$prop_first_try)
+```
+
+
+
+## Interleaved/Odd vs. Diagram/Odd
+
+### Visualization
+
+### Hypothesis Testing
+Students in both conditions performs the same on odd problems
+```{r}
+t.test(odd_int$prop_first_try, odd_dia$prop_first_try)
+```
