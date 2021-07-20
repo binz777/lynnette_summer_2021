@@ -21,15 +21,15 @@ DATA_PATH <- here("data/processed/even_odd_metrics.csv")
 prepost <- read_csv(PREPOST_PATH)
 df <- read_csv(DATA_PATH)
 
-eve_dia <- filter(df, group == "eve_dia")
-eve_int <- filter(df, group == "eve_int")
-odd_dia <- filter(df, group == "odd_dia")
-odd_int <- filter(df, group == "odd_int")
+dia_eve <- filter(df, group == "eve_dia")
+int_eve <- filter(df, group == "eve_int")
+dia_odd <- filter(df, group == "odd_dia")
+int_odd <- filter(df, group == "odd_int")
 ```
 
 ## Visualizing Performance
-```{r}
-ggplot(data = odd_int, 
+```{r, echo = F}
+ggplot(data = int_odd, 
        aes(x = reorder(username, -prop_first_try), y = prop_first_try)) +
   geom_col(fill = "royalblue") + 
   theme(axis.text.x = element_text(angle = 90),
@@ -38,7 +38,7 @@ ggplot(data = odd_int,
   xlab("Student") + 
   ylab("Proporion of Steps Correct on First Attempt")
 
-ggplot(data = eve_int, 
+ggplot(data = int_eve, 
        aes(x = reorder(username, -prop_first_try), y = prop_first_try)) +
   geom_col(fill = "royalblue") + 
   theme(axis.text.x = element_text(angle = 90),
@@ -47,7 +47,7 @@ ggplot(data = eve_int,
   xlab("Student") + 
   ylab("Proporion of Steps Correct on First Attempt")
 
-ggplot(data = odd_dia, 
+ggplot(data = dia_odd, 
        aes(x = reorder(username, -prop_first_try), y = prop_first_try)) +
   geom_col(fill = "royalblue") + 
   theme(axis.text.x = element_text(angle = 90),
@@ -56,7 +56,7 @@ ggplot(data = odd_dia,
   xlab("Student") + 
   ylab("Proporion of Steps Correct on First Attempt")
 
-ggplot(data = eve_dia, 
+ggplot(data = dia_eve, 
        aes(x = reorder(username, -prop_first_try), y = prop_first_try)) +
   geom_col(fill = "royalblue") + 
   theme(axis.text.x = element_text(angle = 90),
@@ -66,44 +66,70 @@ ggplot(data = eve_dia,
   ylab("Proporion of Steps Correct on First Attempt")
 ```
 
-## Interleaved/Even against Interleaved/Odd
+## Interleaved/Even vs. Interleaved/Odd
 
 ### Graphical Comparison
 
-```{r}
-ggplot(union(eve_int, odd_int),
+```{r, echo = F, message = F}
+ggplot(union(int_eve, int_odd),
        aes(x = prop_first_try, fill = group)) +
   geom_histogram(alpha=0.4, position="identity") +
-  xlab("Proporion of Steps Correct on First Attempt") + 
+  xlab("Proportion of Steps Correct on First Attempt") + 
   ylab("Frequency")
 ```
 
+We can see that the Interleaved/Even (pink) is mostly clustered around high values of proportion of steps correct on the first try whereas Interleaved/Odd has a bit more spread and seems to be possibly centered around lower values of proportions of steps correct on the first try than that of the Interleaved/Even.
+
 ### Hypothesis Testing
-Students in the Interleaved condition does better on the even problems than the odd problems (because they also should learn from the odd problems)
+Students in the Interleaved condition should do better on the even problems than the odd problems (because they learn from the odd problems)
 ```{r}
-t.test(eve_int$prop_first_try, odd_int$prop_first_try)
+t.test(int_eve$prop_first_try, int_odd$prop_first_try, alternative = "greater")
 ```
+Students in the Interleaved condition performed significantly better on the even problems in terms of proportion of steps correct on the first try (p = .036). This suggests that students learn from the odd problems with diagrams and can apply the knowledge to similar problems without diagrams. 
 
 
 
 ## Interleaved/Even vs. Diagram/Even
 
-### Visualization
+### Graphical Comparison
+
+```{r, echo = F, message = F}
+ggplot(union(int_eve, dia_eve),
+       aes(x = prop_first_try, fill = group)) +
+  geom_histogram(alpha=0.4, position="identity") +
+  xlab("Proportion of Steps Correct on First Attempt") + 
+  ylab("Frequency")
+```
+Students in the Diagrams condition seems to be doing very well on even problems. Their propotions of steps correct on the first try is generally in the .9 - 1 range and peaks at 1. Students in the Interleaved condition, however, seems to be doing much worse on the even problems. 
 
 ### Hypothesis Testing
-Students in both conditions performs the same on even problems
-```{r}
-t.test(eve_int$prop_first_try, eve_dia$prop_first_try)
-```
 
+Students in both conditions should perform the same on even problems, since they should have learned the skills necessary to do the even problems from the odd problems. 
+```{r}
+t.test(int_eve$prop_first_try, dia_eve$prop_first_try)
+```
+Students in the Diagrams condition performed significantly better on the even problems than the students in the Interleaved condition (p << .001). This suggests that either the students applies the knowledge learned from odd diagram problems better to similar problems with diagrams or that students in the Diagrams condition are more knowledgeable than students in the Interleaved condition in general. 
 
 
 ## Interleaved/Odd vs. Diagram/Odd
 
-### Visualization
+### Graphical Comparison
+
+```{r, echo = F, message = F}
+ggplot(union(int_odd, dia_odd),
+       aes(x = prop_first_try, fill = group)) +
+  geom_histogram(alpha=0.4, position="identity") +
+  xlab("Proportion of Steps Correct on First Attempt") + 
+  ylab("Frequency")
+```
 
 ### Hypothesis Testing
-Students in both conditions performs the same on odd problems
+
+Students in both conditions should perform the same on odd problems because they are all encountering this kind of problems for the first time. 
 ```{r}
-t.test(odd_int$prop_first_try, odd_dia$prop_first_try)
+t.test(int_odd$prop_first_try, dia_odd$prop_first_try)
 ```
+Students in the Diagram condition does significantly better on the odd problems than students in the Interleaved condition (p = .005). This suggests that tape diagrams are useful in guiding students to solve equations. Though this could also mean that students in the Diagram condition are more knowledgeable to begin with. 
+
+
+
