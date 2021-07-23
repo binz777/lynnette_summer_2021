@@ -163,6 +163,11 @@ lin_mod <- lm(prop_first_try ~ pretest*group,
               data = dfff)
 
 summary(lin_mod)
+
+lin_mod_sym <- lm(prop_first_try_sym ~ pretest*group,
+              data = dfff)
+
+summary(lin_mod_sym)
 ```
 
 
