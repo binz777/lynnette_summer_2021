@@ -145,9 +145,9 @@ t.test(int_eve$prop_first_try_sym, dia_eve$prop_first_try_sym)
 t.test(int_odd$prop_first_try_sym, dia_odd$prop_first_try_sym)
 ```
 
-### Testing for pretest and parity main effect and interaction for the 
+## Testing for pretest and parity main effect and interaction for the Interleaved condition
 
-```{r}
+```{r, include = F}
 dff <- filter(df, group %in% c("eve_int", "odd_int"))
 pre <- filter(prepost, username %in% dff$username) %>%
   select(username, PK_nodiagram_pre, PK_diagram_pre) %>%
@@ -158,16 +158,24 @@ pre <- filter(prepost, username %in% dff$username) %>%
   # Because they only did one problem (i.e. didn't do any even problems)
 
 dfff <- inner_join(dff, pre, by = c("username", "group"))
+```
 
-lin_mod <- lm(prop_first_try ~ pretest*group,
+```{r}
+lin_mod <- lm(prop_first_try ~ pretest * group,
               data = dfff)
-
 summary(lin_mod)
 
-lin_mod_sym <- lm(prop_first_try_sym ~ pretest*group,
+lin_mod_sym <- lm(prop_first_try_sym ~ pretest * group,
               data = dfff)
-
 summary(lin_mod_sym)
+
+lin_mod1 <- lm(prop_first_try ~ pretest + group,
+              data = dfff)
+summary(lin_mod1)
+
+lin_mod_sym1 <- lm(prop_first_try_sym ~ pretest + group,
+              data = dfff)
+summary(lin_mod_sym1)
 ```
 
 

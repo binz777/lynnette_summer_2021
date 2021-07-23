@@ -371,22 +371,11 @@ div.tocify {
 ## mean of x mean of y 
 ## 0.7171764 0.8604648</code></pre>
 </div>
-<div id="testing-for-pretest-and-parity-main-effect-and-interaction-for-the" class="section level3">
-<h3>Testing for pretest and parity main effect and interaction for the</h3>
-<pre class="r"><code>dff &lt;- filter(df, group %in% c(&quot;eve_int&quot;, &quot;odd_int&quot;))
-pre &lt;- filter(prepost, username %in% dff$username) %&gt;%
-  select(username, PK_nodiagram_pre, PK_diagram_pre) %&gt;%
-  rename(eve_int = PK_nodiagram_pre, odd_int = PK_diagram_pre) %&gt;%
-  gather(key = &quot;group&quot;, value = &quot;pretest&quot;, c(eve_int, odd_int)) %&gt;%
-  filter(!((group == &quot;eve_int&quot;) 
-           &amp; (username == &quot;fastrabbit&quot; | username == &quot;slowshark&quot;)))
-  # Because they only did one problem (i.e. didn&#39;t do any even problems)
-
-dfff &lt;- inner_join(dff, pre, by = c(&quot;username&quot;, &quot;group&quot;))
-
-lin_mod &lt;- lm(prop_first_try ~ pretest*group,
+</div>
+<div id="testing-for-pretest-and-parity-main-effect-and-interaction-for-the-interleaved-condition" class="section level2">
+<h2>Testing for pretest and parity main effect and interaction for the Interleaved condition</h2>
+<pre class="r"><code>lin_mod &lt;- lm(prop_first_try ~ pretest * group,
               data = dfff)
-
 summary(lin_mod)</code></pre>
 <pre><code>## 
 ## Call:
@@ -408,9 +397,8 @@ summary(lin_mod)</code></pre>
 ## Residual standard error: 0.1611 on 58 degrees of freedom
 ## Multiple R-squared:  0.2843, Adjusted R-squared:  0.2473 
 ## F-statistic: 7.682 on 3 and 58 DF,  p-value: 0.0002088</code></pre>
-<pre class="r"><code>lin_mod_sym &lt;- lm(prop_first_try_sym ~ pretest*group,
+<pre class="r"><code>lin_mod_sym &lt;- lm(prop_first_try_sym ~ pretest * group,
               data = dfff)
-
 summary(lin_mod_sym)</code></pre>
 <pre><code>## 
 ## Call:
@@ -432,7 +420,50 @@ summary(lin_mod_sym)</code></pre>
 ## Residual standard error: 0.1753 on 58 degrees of freedom
 ## Multiple R-squared:  0.3367, Adjusted R-squared:  0.3024 
 ## F-statistic: 9.815 on 3 and 58 DF,  p-value: 2.485e-05</code></pre>
-</div>
+<pre class="r"><code>lin_mod1 &lt;- lm(prop_first_try ~ pretest + group,
+              data = dfff)
+summary(lin_mod1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = prop_first_try ~ pretest + group, data = dfff)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.68842 -0.04251  0.02579  0.06962  0.27709 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   0.696814   0.046964  14.837  &lt; 2e-16 ***
+## pretest       0.080294   0.018663   4.302 6.45e-05 ***
+## groupodd_int -0.008392   0.044362  -0.189    0.851    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.1605 on 59 degrees of freedom
+## Multiple R-squared:  0.2779, Adjusted R-squared:  0.2534 
+## F-statistic: 11.35 on 2 and 59 DF,  p-value: 6.751e-05</code></pre>
+<pre class="r"><code>lin_mod_sym1 &lt;- lm(prop_first_try_sym ~ pretest + group,
+              data = dfff)
+summary(lin_mod_sym1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = prop_first_try_sym ~ pretest + group, data = dfff)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.62617 -0.05791  0.03183  0.08902  0.32732 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   0.68118    0.05136  13.263  &lt; 2e-16 ***
+## pretest       0.08825    0.02041   4.324 5.99e-05 ***
+## groupodd_int -0.05500    0.04851  -1.134    0.261    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.1755 on 59 degrees of freedom
+## Multiple R-squared:  0.3234, Adjusted R-squared:  0.3005 
+## F-statistic:  14.1 on 2 and 59 DF,  p-value: 9.866e-06</code></pre>
 </div>
 
 
