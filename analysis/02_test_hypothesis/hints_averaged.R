@@ -98,56 +98,78 @@ interleaved_df %>% select("parity", `Problem Name`)
 #length(unique(alldiagram_df$username))
 aggregate(interleaved_df$Hints, by=list(Username=interleaved_df$username), FUN=sum) -> sum_hints_il
 aggregate(interleaved_df$Steps, by=list(Username=interleaved_df$username), FUN=sum) -> sum_steps_il
-counts_il <- sum_hints_il$x/sum_steps_il$x
-counts_il
+merge(sum_hints_il, sum_steps_il, by="Username") %>%
+  mutate(hints = x.x/x.y) %>%
+  select(Username, hints) %>%
+  rename(x = hints) -> counts_il
 
-barplot(counts, main="Interleaved Group Hints/Step/Student",
-        xlab="Student")
+ggplot(counts_il, aes(x=Username, y=x)) + geom_bar(stat="identity") + 
+  labs(x="Student", y="Hints/Step") + ggtitle("Interleaved Group Hints/Step/Student") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
 
 # all diagram hints per step per student
 aggregate(alldiagram_df$Hints, by=list(Username=alldiagram_df$username), FUN=sum) -> sum_hints_ad
 aggregate(alldiagram_df$Steps, by=list(Username=alldiagram_df$username), FUN=sum) -> sum_steps_ad
-counts_ad <- sum_hints_ad$x/sum_steps_ad$x
-counts_ad
+merge(sum_hints_ad, sum_steps_ad, by="Username") %>%
+  mutate(hints = x.x/x.y) %>%
+  select(Username, hints) %>%
+  rename(x = hints) -> counts_ad
 
-barplot(counts_ad, main="All Diagram Group Hints/Step/Student",
-        xlab="Student")
+ggplot(counts_ad, aes(x=Username, y=x)) + geom_bar(stat="identity") + 
+  labs(x="Student", y="Hints/Step") + ggtitle("All Diagram Group Hints/Step/Student") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 # intereleaved even problems hints per step per student
 aggregate(interleaved_df_evens$Hints, by=list(Username=interleaved_df_evens$username), FUN=sum) -> sum_hints_ilev
 aggregate(interleaved_df_evens$Steps, by=list(Username=interleaved_df_evens$username), FUN=sum) -> sum_steps_ilev
-counts_ilev <- sum_hints_ilev$x/sum_steps_ilev$x
-counts_ilev
+merge(sum_hints_ilev, sum_steps_ilev, by="Username") %>%
+  mutate(hints = x.x/x.y) %>%
+  select(Username, hints) %>%
+  rename(x = hints) -> counts_ilev
 
-barplot(counts_ilev, main="Interleaved Even Problem Hints",
-        xlab="Student")
+ggplot(counts_ilev, aes(x=Username, y=x)) + geom_bar(stat="identity") + 
+  labs(x="Student", y="Hints/Step") + ggtitle("Interleaved Even Problem Hints/Step/Student") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 # interleaved odd problems hints per step per student
 aggregate(interleaved_df_odds$Hints, by=list(Username=interleaved_df_odds$username), FUN=sum) -> sum_hints_ilod
 aggregate(interleaved_df_odds$Steps, by=list(Username=interleaved_df_odds$username), FUN=sum) -> sum_steps_ilod
-counts_ilod <- sum_hints_ilod$x/sum_steps_ilod$x
-counts_ilod
+merge(sum_hints_ilod, sum_steps_ilod, by="Username") %>%
+  mutate(hints = x.x/x.y) %>%
+  select(Username, hints) %>%
+  rename(x = hints) -> counts_ilod
 
-barplot(counts_ilod, main="Interleaved Odd Problem Hints",
-        xlab="Student")
+ggplot(counts_ilod, aes(x=Username, y=x)) + geom_bar(stat="identity") + 
+  labs(x="Student", y="Hints/Step") + ggtitle("Interleaved Odd Problem Hints/Step/Student") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
 
 # all diagram even problems hints per step per student
 aggregate(alldiagram_df_evens$Hints, by=list(Username=alldiagram_df_evens$username), FUN=sum) -> sum_hints_adev
 aggregate(alldiagram_df_evens$Steps, by=list(Username=alldiagram_df_evens$username), FUN=sum) -> sum_steps_adev
-counts_adev <- sum_hints_adev$x/sum_steps_adev$x
-counts_adev
+merge(sum_hints_adev, sum_steps_adev, by="Username") %>%
+  mutate(hints = x.x/x.y) %>%
+  select(Username, hints) %>%
+  rename(x = hints) -> counts_adev
 
-barplot(counts_adev, main="All Diagram Even Problem Hints",
-        xlab="Student")
+ggplot(counts_adev, aes(x=Username, y=x)) + geom_bar(stat="identity") + 
+  labs(x="Student", y="Hints/Step") + ggtitle("All Diagram Even Problem Hints/Step/Student") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
 
 # all diagram odd problems hints per step per student
 aggregate(alldiagram_df_odds$Hints, by=list(Username=alldiagram_df_odds$username), FUN=sum) -> sum_hints_adod
 aggregate(alldiagram_df_odds$Steps, by=list(Username=alldiagram_df_odds$username), FUN=sum) -> sum_steps_adod
-counts_adod <- sum_hints_adod$x/sum_steps_adod$x
-counts_adod
+merge(sum_hints_adod, sum_steps_adod, by="Username") %>%
+  mutate(hints = x.x/x.y) %>%
+  select(Username, hints) %>%
+  rename(x = hints) -> counts_adod
 
-barplot(counts_adod, main="All Diagram Odd Problem Hints",
-        xlab="Student")
+ggplot(counts_adod, aes(x=Username, y=x)) + geom_bar(stat="identity") + 
+  labs(x="Student", y="Hints/Step") + ggtitle("All Diagram Even Problem Hints/Step/Student") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
 
 # Create dfs for hints/step/student by condition
 # Interleaved

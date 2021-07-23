@@ -1,4 +1,5 @@
-# testing differences between odd and even problems in hints/step/student
+# testing differences between even problems in hints/step/student
+# for symbolic steps only between conditions
 library(readxl)
 library(ggplot2)
 library(tidyverse)
@@ -43,17 +44,17 @@ interleaved_step_df %>%
   filter(grepl('no-diagrams', `Problem Name`)) ->
   interleaved_even_steps
 alldiagram_step_df %>% 
-  filter(alldiagram_step_df$problem_prefix %in% interleaved_step__odds$problem_prefix) %>%
+  filter(alldiagram_step_df$problem_prefix %in% interleaved_odd_steps$problem_prefix) %>%
   filter(!(grepl('Bonus Level', condition) & problem_prefix == "4xplus1eqxplus10")) %>%
   filter(!(grepl('Bonus Level', condition) & problem_prefix == "8xplus3eq5plus6x")) %>%
   filter(!(grepl('Level 8', condition) & problem_prefix == "6xplus1eq13plus2x")) ->
   alldiagram_odd_steps
 alldiagram_step_df %>%
-  filter(alldiagram_step_df$problem_prefix %in% interleaved_step_evens$problem_prefix) %>%
+  filter(alldiagram_step_df$problem_prefix %in% interleaved_even_steps$problem_prefix) %>%
   filter(!(grepl('Level 7', condition) & problem_prefix == "4xplus1eqxplus10")) %>%
   filter(!(grepl('Level 8', condition) & problem_prefix == "8xplus3eq5plus6x")) %>%
   filter(!(grepl('Bonus Level', condition) & problem_prefix == "8xplus3eq5plus6x")) ->
-  alldiagram_even_Steps
+  alldiagram_even_steps
 
 
 # Compare the performance of the interleaved condition on even 
