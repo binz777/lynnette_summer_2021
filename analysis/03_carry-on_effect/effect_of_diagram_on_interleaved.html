@@ -324,6 +324,92 @@ div.tocify {
 <p>Students in the Diagram condition does significantly better on the odd problems than students in the Interleaved condition (p = .005). This suggests that tape diagrams are useful in guiding students to solve equations. Though this could also mean that students in the Diagram condition are more knowledgeable to begin with.</p>
 </div>
 </div>
+<div id="symbolic-steps-only" class="section level2">
+<h2>Symbolic steps only</h2>
+<div id="interleavedeven-vs.-interleavedodd-1" class="section level3">
+<h3>Interleaved/Even vs. Interleaved/Odd</h3>
+<pre class="r"><code>t.test(int_eve$prop_first_try_sym, int_odd$prop_first_try_sym, alternative = &quot;greater&quot;)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  int_eve$prop_first_try_sym and int_odd$prop_first_try_sym
+## t = 2.7642, df = 46.181, p-value = 0.004085
+## alternative hypothesis: true difference in means is greater than 0
+## 95 percent confidence interval:
+##  0.05402459        Inf
+## sample estimates:
+## mean of x mean of y 
+## 0.8547264 0.7171764</code></pre>
+</div>
+<div id="interleavedeven-vs.-diagrameven-1" class="section level3">
+<h3>Interleaved/Even vs. Diagram/Even</h3>
+<pre class="r"><code>t.test(int_eve$prop_first_try_sym, dia_eve$prop_first_try_sym)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  int_eve$prop_first_try_sym and dia_eve$prop_first_try_sym
+## t = -3.9474, df = 40.74, p-value = 0.0003052
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.14969393 -0.04835161
+## sample estimates:
+## mean of x mean of y 
+## 0.8547264 0.9537492</code></pre>
+</div>
+<div id="interleavedodd-vs.-diagramodd-1" class="section level3">
+<h3>Interleaved/Odd vs. Diagram/Odd</h3>
+<pre class="r"><code>t.test(int_odd$prop_first_try_sym, dia_odd$prop_first_try_sym)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  int_odd$prop_first_try_sym and dia_odd$prop_first_try_sym
+## t = -2.957, df = 42.884, p-value = 0.005035
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.24101899 -0.04555796
+## sample estimates:
+## mean of x mean of y 
+## 0.7171764 0.8604648</code></pre>
+</div>
+<div id="testing-for-pretest-and-parity-main-effect-and-interaction-for-the" class="section level3">
+<h3>Testing for pretest and parity main effect and interaction for the</h3>
+<pre class="r"><code>dff &lt;- filter(df, group %in% c(&quot;eve_int&quot;, &quot;odd_int&quot;))
+pre &lt;- filter(prepost, username %in% dff$username) %&gt;%
+  select(username, PK_nodiagram_pre, PK_diagram_pre) %&gt;%
+  rename(eve_int = PK_nodiagram_pre, odd_int = PK_diagram_pre) %&gt;%
+  gather(key = &quot;group&quot;, value = &quot;pretest&quot;, c(eve_int, odd_int)) %&gt;%
+  filter(!((group == &quot;eve_int&quot;) 
+           &amp; (username == &quot;fastrabbit&quot; | username == &quot;slowshark&quot;)))
+  # Because they only did one problem (i.e. didn&#39;t do any even problems)
+
+dfff &lt;- inner_join(dff, pre, by = c(&quot;username&quot;, &quot;group&quot;))
+
+lin_mod &lt;- lm(prop_first_try ~ pretest*group,
+              data = dfff)
+
+summary(lin_mod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = prop_first_try ~ pretest * group, data = dfff)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.67363 -0.03118  0.02653  0.07006  0.29189 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)           0.72213    0.05867  12.308   &lt;2e-16 ***
+## pretest               0.06742    0.02581   2.612   0.0114 *  
+## groupodd_int         -0.04850    0.07102  -0.683   0.4973    
+## pretest:groupodd_int  0.02722    0.03753   0.725   0.4713    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.1611 on 58 degrees of freedom
+## Multiple R-squared:  0.2843, Adjusted R-squared:  0.2473 
+## F-statistic: 7.682 on 3 and 58 DF,  p-value: 0.0002088</code></pre>
+</div>
+</div>
 
 
 

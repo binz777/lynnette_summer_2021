@@ -14,7 +14,6 @@ output:
 library(tidyverse)
 library(here)
 library(corrplot)
-
 PREPOST_PATH <- here("data/prepost_cleaned.csv")
 DATA_PATH <- here("data/processed/even_odd_metrics.csv")
 
@@ -130,6 +129,43 @@ Students in both conditions should perform the same on odd problems because they
 t.test(int_odd$prop_first_try, dia_odd$prop_first_try)
 ```
 Students in the Diagram condition does significantly better on the odd problems than students in the Interleaved condition (p = .005). This suggests that tape diagrams are useful in guiding students to solve equations. Though this could also mean that students in the Diagram condition are more knowledgeable to begin with. 
+
+## Symbolic steps only
+
+### Interleaved/Even vs. Interleaved/Odd
+```{r}
+t.test(int_eve$prop_first_try_sym, int_odd$prop_first_try_sym, alternative = "greater")
+```
+### Interleaved/Even vs. Diagram/Even
+```{r}
+t.test(int_eve$prop_first_try_sym, dia_eve$prop_first_try_sym)
+```
+### Interleaved/Odd vs. Diagram/Odd
+```{r}
+t.test(int_odd$prop_first_try_sym, dia_odd$prop_first_try_sym)
+```
+
+### Testing for pretest and parity main effect and interaction for the 
+
+```{r}
+dff <- filter(df, group %in% c("eve_int", "odd_int"))
+pre <- filter(prepost, username %in% dff$username) %>%
+  select(username, PK_nodiagram_pre, PK_diagram_pre) %>%
+  rename(eve_int = PK_nodiagram_pre, odd_int = PK_diagram_pre) %>%
+  gather(key = "group", value = "pretest", c(eve_int, odd_int)) %>%
+  filter(!((group == "eve_int") 
+           & (username == "fastrabbit" | username == "slowshark")))
+  # Because they only did one problem (i.e. didn't do any even problems)
+
+dfff <- inner_join(dff, pre, by = c("username", "group"))
+
+lin_mod <- lm(prop_first_try ~ pretest*group,
+              data = dfff)
+
+summary(lin_mod)
+```
+
+
 
 
 
