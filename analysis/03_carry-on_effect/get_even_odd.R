@@ -95,14 +95,17 @@ df_s %>%
             inc_dia = sum(Incorrects[grepl("selectd", `KC (Default)`)]),
             inc_sym = sum(Incorrects[!grepl("selectd", `KC (Default)`)]),
             hints = sum(Hints),
-            first_try = sum(`First Attempt` == "correct")) %>%
+            first_try = sum(`First Attempt` == "correct"),
+            first_try_sym = sum(`First Attempt`[!grepl("selectd", `KC (Default)`)] == "correct"),
+            total_sym_step = sum(!grepl("selectd", `KC (Default)`))) %>%
   inner_join(df1, by = c("username", "group")) %>%
   mutate(prop_hint_steps = steps_with_hints / tot_steps,
-         prop_first_try = first_try / tot_steps#,
+         prop_first_try = first_try / tot_steps,
+         prop_first_try_sym = first_try_sym / total_sym_step#,
          # avg_time_per_step = tot_time / tot_steps,
          # adj_avg_tps = adj_tot_time / tot_steps
   ) %>%
-  select(-c(tot_steps, steps_with_hints, first_try)) -> df
+  select(-c(tot_steps, steps_with_hints, first_try, total_sym_step, first_try_sym)) -> df
 
 
 write_csv(df_p, PROB_DATA_OUTPATH)
