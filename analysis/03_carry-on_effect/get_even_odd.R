@@ -9,11 +9,11 @@ LOG_DATA_PROB_PATH <- here("data/all_by_student_problem.txt")
 LOG_DATA_STEP_PATH <- here("data/all_by_student_step.txt")
 PROB_DATA_OUTPATH <- here("data/processed/even_odd_by_student_problem.csv")
 COMP_DATA_OUTPATH <- here("data/processed/even_odd_metrics.csv")
+KC_DATA_OUTPATH <- here("data/processed/even_odd_kc.csv")
 
 prepost <- read_csv(PREPOST_PATH)
 logdata_p <- read_tsv(LOG_DATA_PROB_PATH)
 logdata_s <- read_tsv(LOG_DATA_STEP_PATH)
-
 
 # Groups by parity and condition and gets the predictors used for analyses
 foo <- function(num, cond)
@@ -108,5 +108,24 @@ df_s %>%
   select(-c(tot_steps, steps_with_hints, first_try, total_sym_step, first_try_sym)) -> df
 
 
+# Specific KCs
+df_s %>%
+  group_by(username, group) %>%
+  summarise(div_comp = sum(`First Attempt`[grepl("division-complex", `KC (Default)`)] == "correct"),
+            div_comp_steps = sum(grepl("division-complex", `KC (Default)`)),
+            div_simp = sum(`First Attempt`[grepl("division-simple", `KC (Default)`)] == "correct"),
+            div_simp_steps = sum(grepl("division-simple", `KC (Default)`)),
+            sub_con = sum(`First Attempt`[grepl("subtraction-const", `KC (Default)`)] == "correct"),
+            sub_con_steps = sum(grepl("subtraction-const", `KC (Default)`)),
+            sub_var = sum(`First Attempt`[grepl("subtraction-var", `KC (Default)`)] == "correct"),
+            sub_var_steps = sum(grepl("subtraction-var", `KC (Default)`))) %>%
+  inner_join(df1, by = c("username", "group")) %>%
+  mutate(division_complex = div_comp / div_comp_steps,
+         division_simple = div_simp / div_simp_steps,
+         subtraction_const = sub_con / sub_con_steps,
+         subtraction_var = sub_var / sub_var_steps) -> df_kc
+
+
 write_csv(df_p, PROB_DATA_OUTPATH)
 write_csv(df, COMP_DATA_OUTPATH)
+write_csv(df_kc, KC_DATA_OUTPATH)

@@ -16,6 +16,7 @@ library(here)
 library(corrplot)
 PREPOST_PATH <- here("data/prepost_cleaned.csv")
 DATA_PATH <- here("data/processed/even_odd_metrics.csv")
+KC_DATA_PATH <- here("data/processed/even_odd_kc.csv")
 
 prepost <- read_csv(PREPOST_PATH)
 df <- read_csv(DATA_PATH)
@@ -177,7 +178,60 @@ lin_mod_sym1 <- lm(prop_first_try_sym ~ pretest + group,
               data = dfff)
 summary(lin_mod_sym1)
 ```
+```{r, include = F}
+df <- read_csv(KC_DATA_PATH)
 
+dia_eve <- filter(df, group == "eve_dia")
+int_eve <- filter(df, group == "eve_int")
+dia_odd <- filter(df, group == "odd_dia")
+int_odd <- filter(df, group == "odd_int")
+```
+
+
+## Performance on specific KCs in the Interleaved condition
+```{r, echo = F, message = F}
+ggplot(union(int_eve, int_odd),
+       aes(x = division_complex, fill = group)) +
+  geom_histogram(alpha=0.4, position="identity") +
+  xlab("Proportion of Division-Complex Steps Correct on First Attempt") + 
+  ylab("Frequency")
+```
+```{r}
+t.test(na.omit(int_eve$division_complex), na.omit(int_odd$division_complex), alternative = "greater")
+```
+
+```{r, echo = F, message = F}
+ggplot(union(int_eve, int_odd),
+       aes(x = division_simple, fill = group)) +
+  geom_histogram(alpha=0.4, position="identity") +
+  xlab("Proportion of Division-Simple Steps Correct on First Attempt") + 
+  ylab("Frequency")
+```
+```{r}
+t.test(na.omit(int_eve$division_simple), na.omit(int_odd$division_simple), alternative = "greater")
+```
+
+```{r, echo = F, message = F}
+ggplot(union(int_eve, int_odd),
+       aes(x = subtraction_const, fill = group)) +
+  geom_histogram(alpha=0.4, position="identity") +
+  xlab("Proportion of Subtraction-Const Steps Correct on First Attempt") + 
+  ylab("Frequency")
+```
+```{r}
+t.test(na.omit(int_eve$subtraction_const), na.omit(int_odd$subtraction_const), alternative = "greater")
+```
+
+```{r, echo = F, message = F}
+ggplot(union(int_eve, int_odd),
+       aes(x = subtraction_var, fill = group)) +
+  geom_histogram(alpha=0.4, position="identity") +
+  xlab("Proportion of Subtraction-Var Steps Correct on First Attempt") + 
+  ylab("Frequency")
+```
+```{r}
+t.test(na.omit(int_eve$subtraction_var), na.omit(int_odd$subtraction_var), alternative = "greater")
+```
 
 
 
