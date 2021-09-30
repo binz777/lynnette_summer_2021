@@ -7,6 +7,7 @@ library(here)
 PREPOST_PATH <- here("data/prepost_cleaned.csv")
 LOG_DATA_PROB_PATH <- here("data/all_by_student_problem.txt")
 LOG_DATA_STEP_PATH <- here("data/all_by_student_step.txt")
+LOG_DATA_TRAN_PATH <- here("data/logdata_WVW_withIDs.txt")
 PROB_DATA_OUTPATH <- here("data/processed/even_odd_by_student_problem.csv")
 COMP_DATA_OUTPATH <- here("data/processed/even_odd_metrics.csv")
 KC_DATA_OUTPATH <- here("data/processed/even_odd_kc.csv")
@@ -14,6 +15,7 @@ KC_DATA_OUTPATH <- here("data/processed/even_odd_kc.csv")
 prepost <- read_csv(PREPOST_PATH)
 logdata_p <- read_tsv(LOG_DATA_PROB_PATH)
 logdata_s <- read_tsv(LOG_DATA_STEP_PATH)
+logdata_t <- read_tsv(LOG_DATA_TRAN_PATH)
 
 # Groups by parity and condition and gets the predictors used for analyses
 foo <- function(num, cond)
@@ -79,13 +81,26 @@ df_p %>%
 df1 <- inner_join(total_steps, problems_solved, by = c("username", "group"))
 
 
-# Adds group (even/odd and interleaved/alldiagrams) information to student-steps logdata
+# Adds group (even/odd and interleaved/alldiagrams) information to student-steps and transaction logdata
 logdata_s %>%
   filter(`Anon Student Id` %in% prepost$username) %>%
   rename(username = `Anon Student Id`) -> a
 b <- select(df_p, c("username", "Problem Name", "Problem Hierarchy", "group"))
 df_s <- inner_join(a, b, by = c("username", "Problem Name", "Problem Hierarchy")) %>% unique()
 
+logdata_t %>%
+  filter(`Anon Student Id` %in% prepost$username) %>%
+  rename(username = `Anon Student Id`) %>%
+  mutate(`Problem Hierarchy` = paste0("Assignment ", `Level (Assignment)`, ", ProblemSet ", `Level (ProblemSet)`)) %>%
+  select(username, `Duration (sec)`, `Problem Name`, `Problem Hierarchy`, `KC (Default)`) -> a
+df_t <- inner_join(a, b, by = c("username", "Problem Name", "Problem Hierarchy")) %>% 
+  unique() %>%
+  filter(!is.na(`Duration (sec)`))
+
+df_t %>%
+  group_by(username, group) %>%
+  summarise(tot_time = sum(`Duration (sec)`),
+            tot_time_sym = sum(`Duration (sec)`[!grepl("selectd", `KC (Default)`)])) -> c
 
 # Compute various performance metrics
 df_s %>%
@@ -99,12 +114,12 @@ df_s %>%
             first_try_sym = sum(`First Attempt`[!grepl("selectd", `KC (Default)`)] == "correct"),
             total_sym_step = sum(!grepl("selectd", `KC (Default)`))) %>%
   inner_join(df1, by = c("username", "group")) %>%
+  inner_join(c, by = c("username", "group")) %>%
   mutate(prop_hint_steps = steps_with_hints / tot_steps,
          prop_first_try = first_try / tot_steps,
-         prop_first_try_sym = first_try_sym / total_sym_step#,
-         # avg_time_per_step = tot_time / tot_steps,
-         # adj_avg_tps = adj_tot_time / tot_steps
-  ) %>%
+         prop_first_try_sym = first_try_sym / total_sym_step,
+         avg_tps = tot_time / tot_steps,
+         avg_tps_sym = tot_time_sym / total_sym_step) %>%
   select(-c(tot_steps, steps_with_hints, first_try, total_sym_step, first_try_sym)) -> df
 
 
