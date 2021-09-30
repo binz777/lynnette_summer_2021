@@ -1,0 +1,32 @@
+---
+title: "Further Tests"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+
+DATA_PATH <- here("data/processed/prepost_cleaned_w_std_lrn_gain.csv")
+
+df_all <- read_csv(DATA_PATH) %>%
+  filter(!is.na(s_pk))
+
+df_diagram <- filter(df_all, condition == "alldiagram")
+df_interleave <- filter(df_all, condition == "interleaved")
+```
+
+## Testing interaction between pretest score and condition
+
+```{r}
+raw_ck <- lm(CK_post ~ CKPK_pre*condition, df_all)
+raw_pk_diagram <- lm(PK_diagrm_post ~ CKPK_pre*condition, df_all)
+raw_pk_nodiagram <- lm(PK_nodiagram_post ~ CKPK_pre*condition, df_all)
+
+summary(raw_ck)
+summary(raw_pk_diagram)
+summary(raw_pk_nodiagram)
+```
+
+**No significant interaction between pretest and condition**
+
