@@ -93,7 +93,7 @@ Here, `condition` and `condition:CKPK_pre` are not significant predictors of the
 ```{r}
 mod1 <- lm(num_solved ~ condition + CKPK_pre + condition:CKPK_pre, data = df)
 mod2 <- lm(inc_sym ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
-mod3 <- lm(hints ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
+mod3 <- lm(perc_hint_steps ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
 mod4 <- lm(adj_avg_tps ~ condition + CKPK_pre + condition:CKPK_pre + num_solved, data = df)
 ```
 
@@ -108,7 +108,7 @@ summary(mod2)
 ```{r}
 summary(mod3)
 ```
-`condition` and the interaction term of `condition` and the pretest score are significant predictors for the number of hints used. In the previous study, only `condition` was significant.   
+`condition`, `num_solved` and the interaction term of `condition` and the pretest score are significant predictors for the average number of hints per step. In the previous study, only `condition` was significant. 
 ```{r}
 summary(mod4)
 ```
