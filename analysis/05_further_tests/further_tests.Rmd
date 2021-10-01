@@ -1,6 +1,12 @@
 ---
 title: "Further Tests"
-output: html_document
+author: "Bin & Lizzy"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    toc_depth: 6
 ---
 
 ```{r setup, include=FALSE}
@@ -20,10 +26,12 @@ df_interleave <- filter(df_all, condition == "interleaved")
 
 ```{r}
 raw_ck <- lm(CK_post ~ CKPK_pre*condition, df_all)
+raw_pk <- lm(PK_post ~ CKPK_pre*condition, df_all)
 raw_pk_diagram <- lm(PK_diagrm_post ~ CKPK_pre*condition, df_all)
 raw_pk_nodiagram <- lm(PK_nodiagram_post ~ CKPK_pre*condition, df_all)
 
 summary(raw_ck)
+summary(raw_pk)
 summary(raw_pk_diagram)
 summary(raw_pk_nodiagram)
 ```

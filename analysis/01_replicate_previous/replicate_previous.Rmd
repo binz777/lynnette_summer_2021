@@ -85,8 +85,7 @@ Here, `condition` and `condition:CKPK_pre` are not significant predictors of the
 *First, we found a main effect of pretest scores on the number of problems solved, β = 3.04, t(79) = 7.49, p < .01 ... This increase was steeper for students in the No-Diagram condition than the Diagram condition, β = -1.24, t(79) = -2.12, p = .04 ...*
 
 
-*Regarding hint use and average time spent per step, we found a significant main effect of condition (hint use: β = - 0.71, t(78) = -3.08, p < .01; time per step: β = -12.18, t(78) =
--2.89, p < .01) but no significant interactions between condition and pretest score. There were no significant main nor interaction effects on the average number of incorrect attempts made per step.* 
+*Regarding hint use and average time spent per step, we found a significant main effect of condition (hint use: β = - 0.71, t(78) = -3.08, p < .01; time per step: β = -12.18, t(78) = -2.89, p < .01) but no significant interactions between condition and pretest score. There were no significant main nor interaction effects on the average number of incorrect attempts made per step.* 
 
 ##### Results
 
