@@ -1,0 +1,176 @@
+---
+title: "Ad-hoc analysis for paper writing"
+author: "Bin & Lizzy"
+date: "6/25/2021"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    toc_depth: 6
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(corrplot)
+
+PREPOST_PATH <- here("data/prepost_cleaned.csv")
+DATA_PATH <- here("data/processed/replicate.csv")
+EVEN_ODD_DATA_PATH <- here("data/processed/even_odd_metrics.csv")
+
+prepost <- read_csv(PREPOST_PATH)
+df <- read_csv(DATA_PATH)
+even_odd_df <- read_csv(EVEN_ODD_DATA_PATH)
+```
+### Data Preprocessing for Even/Odd
+```{r}
+even_df = even_odd_df[grepl("eve", even_odd_df$group), ]
+odd_df = even_odd_df[grepl("odd", even_odd_df$group), ]
+```
+
+### Mean pre/posttest scores by condition
+
+```{r, echo = T}
+prepost %>%
+  group_by(condition) %>%
+  summarize(pk_pre = mean(PK_pre),
+            pk_post = mean(PK_post),
+            ck_pre = mean(CK_pre),
+            ck_post = mean(CK_post),
+            ckpk_pre = mean(CKPK_pre),
+            ckpk_post = mean(CKPK_post))
+```
+### Learning (RQ1)
+
+```{r}
+mod1 <- lm(CK_post ~ condition + CKPK_pre, data = prepost)
+```
+```{r, echo = T}
+summary(mod1)
+```
+Here, there is no significant main effect of condition on the CK posttest scores.
+
+```{r}
+mod2 <- lm(PK_diagrm_post ~ condition + CKPK_pre, data = prepost)
+mod3 <- lm(PK_nodiagram_post ~ condition + CKPK_pre, data = prepost)
+mod4 <- lm(PK_post ~ condition + CKPK_pre, data = prepost)
+```
+```{r, echo = T}
+summary(mod2)
+summary(mod3)
+summary(mod4)
+```
+No significant main effect of condition on PK diagram steps, PK no diagram steps, or PK all steps.
+
+#### Learning (RQ1) with Interaction Effects
+
+```{r}
+mod5 <- lm(CK_post ~ condition * CKPK_pre, data = prepost)
+```
+```{r, echo = T}
+summary(mod5)
+```
+No significant main effect of condition on CK posttest scores.
+
+```{r}
+mod6 <- lm(PK_diagrm_post ~ condition * CKPK_pre, data = prepost)
+mod7 <- lm(PK_nodiagram_post ~ condition * CKPK_pre, data = prepost)
+mod8 <- lm(PK_post ~ condition * CKPK_pre, data = prepost)
+```
+```{r, echo = T}
+summary(mod6)
+summary(mod7)
+summary(mod8)
+```
+There is a significant main effect of condition on PK no diagram and PK all steps at the a=0.1 level. There is no significant main effect of condition on PK diagram steps.
+
+### Performance (RQ2)
+```{r}
+mod9 <- lm(num_solved ~ condition + CKPK_pre, data = df)
+mod10 <- lm(avg_hint_sym ~ condition + CKPK_pre, data = df)
+mod11 <- lm(avg_inc_sym ~ condition + CKPK_pre, data = df)
+mod12 <- lm(adj_avg_tps ~ condition + CKPK_pre, data = df)
+```
+```{r, echo = T}
+summary(mod9)
+summary(mod10)
+summary(mod11)
+summary(mod12)
+```
+There is a significant main effect of condition for average hints per symbolic step and time spent per symbolic step.
+#### Performance (RQ2) with Interaction Effects
+```{r}
+mod13 <- lm(num_solved ~ condition * CKPK_pre, data = df)
+mod14 <- lm(avg_hint_sym ~ condition * CKPK_pre, data = df)
+mod15 <- lm(avg_inc_sym ~ condition * CKPK_pre, data = df)
+mod16 <- lm(adj_avg_tps ~ condition * CKPK_pre, data = df)
+```
+```{r, echo = T}
+summary(mod13)
+summary(mod14)
+summary(mod15)
+summary(mod16)
+```
+There is a significant main effect of condition for average hints per symbolic step, average incorrect attempts per symbolic step, and time spent per symbolic step. After adding interaction terms the main effect of condition became significant for average incorrect attempts per symbolic step.
+
+
+
+### Odd/Even Analyses Between Conditions (RQ3)
+
+#### Odd problems, no interaction
+```{r}
+mod17 <- lm(avg_hint_sym ~ condition + CKPK_pre, data = odd_df)
+mod18 <- lm(avg_inc_sym ~ condition + CKPK_pre, data = odd_df)
+# mod19 <- lm(adj_avg_tps ~ condition + CKPK_pre, data = odd_df)
+# No time data right now, need to ask Bin!!!
+```
+```{r, echo = T}
+summary(mod17)
+summary(mod18)
+# summary(mod19) # No time data right now, ask Bin!!!
+```
+There is a significant main effect of condition for average hints per symbolic step for odd problems only.
+#### Even problems, no interaction
+```{r}
+mod20 <- lm(avg_hint_sym ~ condition + CKPK_pre, data = even_df)
+mod21 <- lm(avg_inc_sym ~ condition + CKPK_pre, data = even_df)
+# mod22 <- lm(adj_avg_tps ~ condition + CKPK_pre, data = even_df)
+# No time data right now, need to ask Bin!!!
+```
+```{r, echo = T}
+summary(mod20)
+summary(mod21)
+# summary(mod22) # No time data right now, ask Bin!!!
+```
+There is a significant main effect of condition for average hints per symbolic step and average incorrect attempts per symbolic for even problems only.
+#### Odd problems with interaction effects
+```{r}
+mod23 <- lm(avg_hint_sym ~ condition * CKPK_pre, data = odd_df)
+mod24 <- lm(avg_inc_sym ~ condition * CKPK_pre, data = odd_df)
+# mod25 <- lm(adj_avg_tps ~ condition * CKPK_pre, data = odd_df)
+# No time data right now, need to ask Bin!!!
+```
+```{r, echo = T}
+summary(mod23)
+summary(mod24)
+# summary(mod25) # No time data right now, ask Bin!!!
+```
+There is a significant main effect of condition for average hints per symbolic step and average incorrect attempts per symbolic for odd problems only. Note that there was no significant main effect for incorrect attempts without the interaction effect.
+
+
+#### Even problems with interaction effects
+```{r}
+mod26 <- lm(avg_hint_sym ~ condition * CKPK_pre, data = even_df)
+mod27 <- lm(avg_inc_sym ~ condition * CKPK_pre, data = even_df)
+# mod28 <- lm(adj_avg_tps ~ condition * CKPK_pre, data = even_df)
+# No time data right now, need to ask Bin!!!
+```
+```{r, echo = T}
+summary(mod26)
+summary(mod27)
+# summary(mod28) # No time data right now, ask Bin!!!
+```
+There is a significant main effect of condition for average hints per symbolic step and average incorrect attempts per symbolic for odd problems only. This is the same result with and without the interaction effect.
+#### Odd/Even Delta Analysis
+Todo!

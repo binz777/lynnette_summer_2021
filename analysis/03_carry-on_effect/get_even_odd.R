@@ -86,7 +86,6 @@ logdata_s %>%
 b <- select(df_p, c("username", "Problem Name", "Problem Hierarchy", "group"))
 df_s <- inner_join(a, b, by = c("username", "Problem Name", "Problem Hierarchy")) %>% unique()
 
-
 # Compute various performance metrics
 df_s %>%
   mutate(used_hint = ifelse(Hints >= 1, 1, 0)) %>%
@@ -95,17 +94,26 @@ df_s %>%
             inc_dia = sum(Incorrects[grepl("selectd", `KC (Default)`)]),
             inc_sym = sum(Incorrects[!grepl("selectd", `KC (Default)`)]),
             hints = sum(Hints),
+            hints_sym = sum(Hints[!grepl("selectd", `KC (Default)`)]),
             first_try = sum(`First Attempt` == "correct"),
             first_try_sym = sum(`First Attempt`[!grepl("selectd", `KC (Default)`)] == "correct"),
             total_sym_step = sum(!grepl("selectd", `KC (Default)`))) %>%
   inner_join(df1, by = c("username", "group")) %>%
   mutate(prop_hint_steps = steps_with_hints / tot_steps,
          prop_first_try = first_try / tot_steps,
-         prop_first_try_sym = first_try_sym / total_sym_step#,
+         prop_first_try_sym = first_try_sym / total_sym_step,
+         avg_inc_sym = inc_sym / total_sym_step,
+         avg_hint_sym = hints_sym / total_sym_step#,
          # avg_time_per_step = tot_time / tot_steps,
          # adj_avg_tps = adj_tot_time / tot_steps
   ) %>%
   select(-c(tot_steps, steps_with_hints, first_try, total_sym_step, first_try_sym)) -> df
+
+# Adds prepost data and condition
+pretest_and_condition <- select(prepost, c("username", "CKPK_pre", "condition")) 
+pretest_and_condition
+
+df <- inner_join(pretest_and_condition, df, by = c("username"))
 
 
 write_csv(df_p, PROB_DATA_OUTPATH)

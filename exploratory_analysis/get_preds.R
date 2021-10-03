@@ -17,12 +17,14 @@ logdata_s <- read_tsv(LOG_DATA_STEP_PATH)
 logdata_t <- read_tsv(LOG_DATA_TRAN_PATH)
 
 
-# Get number of problems solved and total steps for each student
+# Get number of problems solved, total steps, total hints, total incorrects for each student
 logdata_p %>%
   filter(`Anon Student Id` %in% prepost$username) %>%
   group_by(`Anon Student Id`) %>%
   summarise(num_solved = n(),
-            tot_steps = sum(Steps)) %>%
+            tot_steps = sum(Steps),
+            tot_hints = sum(Hints),
+            tot_incorrects=sum(Incorrects)) %>%
   rename(username = `Anon Student Id`) -> df1
 
 
@@ -36,19 +38,20 @@ logdata_s %>%
 
 
 # Gets the number of incorrects (diagrammatic and symbolic seperately) and
-# number of hints per step
+# number of hints per symbolic step
 logdata_s %>%
   filter(`Anon Student Id` %in% prepost$username) %>%
-  mutate(used_hint = ifelse(Hints >= 1, 1, 0)) %>%
+  mutate(used_hint = ifelse(Hints >= 1, 1, 0), is_sym = ifelse(!grepl("selectd", `KC (Default)`), 1, 0)) %>%
   group_by(`Anon Student Id`) %>%
   summarise(inc_dia = sum(Incorrects[grepl("selectd", `KC (Default)`)]),
             inc_sym = sum(Incorrects[!grepl("selectd", `KC (Default)`)]),
-            hints = sum(Hints),
+            tot_sym_steps = sum(is_sym),
+            hints_sym = sum(Hints[!grepl("selectd", `KC (Default)`)]),
             first_try = sum(`First Attempt` == "correct")) %>%
   rename(username = `Anon Student Id`) -> df3 # no one used hints on diagrammatic steps
 
 
-# Gets the time spent on each problem
+# Gets the time spent on each problem on symbolic steps
 duration <- function(vec) 
 {
   vec <- sort(vec)
@@ -64,7 +67,8 @@ duration <- function(vec)
 
 logdata_t %>%
   filter(`Anon Student Id` %in% prepost$username,
-         !is.na(`CF (tool_event_time)`)) %>%
+         !is.na(`CF (tool_event_time)`),
+         !grepl("selectd", `KC (Default)`)) %>%
   group_by(`Anon Student Id`, `Problem Name`) %>%
   mutate(time_stamp = as.POSIXlt(`CF (tool_event_time)`, 
                                  format = "%Y-%m-%d %H:%M:%OS", 
@@ -90,9 +94,12 @@ df_b <- inner_join(df3, df4, by = "username")
 df_c <- inner_join(df_a, df_b, by = "username") 
 df <- inner_join(df_c, df5, by = "username") %>%
   mutate(perc_hint_steps = steps_with_hints / tot_steps,
+         avg_hint_steps = tot_hints/tot_steps,
+         avg_hint_sym = hints_sym/tot_sym_steps,
          perc_first_try = first_try /tot_steps,
-         avg_time_per_step = tot_time / tot_steps,
-         adj_avg_tps = adj_tot_time / tot_steps) %>%
+         avg_inc_sym = inc_sym/tot_sym_steps,
+         avg_time_per_sym_step = tot_time / tot_sym_steps,
+         adj_avg_tps = adj_tot_time / tot_sym_steps) %>%
   select(-c(tot_steps, steps_with_hints))
 
 write_csv(df, DATA_OUTPATH)
