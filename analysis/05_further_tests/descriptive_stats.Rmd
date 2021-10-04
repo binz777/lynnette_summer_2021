@@ -1,0 +1,88 @@
+---
+title: "Descriptive Statistics"
+author: "Bin & Lizzy"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    toc_depth: 6
+    code_folding: hide
+---
+
+```{r, include = FALSE}
+library(tidyverse)
+library(here)
+
+PREPOST_PATH <- here("data/processed/prepost_cleaned_w_std_lrn_gain.csv")
+REPLICATE_PATH <- here("data/processed/replicate.csv")
+EVENODD_PATH <- here("data/processed/even_odd_metrics.csv")
+
+df_prepost <- read_csv(PREPOST_PATH)
+df_replicate <- read_csv(REPLICATE_PATH)
+df_evenodd <- read_csv(EVENODD_PATH)
+```
+### CK_pre, CK_post, PK-diagram_pre, PK-diagram_post, PK-nodiagram_pre, PK-nodiagram_post
+
+```{r}
+df_prepost %>%
+  select(CK_pre, CK_post, PK_diagram_pre, PK_diagrm_post, PK_nodiagram_pre, PK_nodiagram_post) %>%
+  gather() %>%
+  group_by(key) %>%
+  summarise(Mean = mean(value),
+            `Standard Deviation` = sd(value)) %>%
+  rename("Component" = key)
+```
+
+
+### Overall average hint per step, time spent, and average incorrect (symbolic steps only)
+
++ Cannot do time spent per symbolic step because don't have it calculated (used the old transaction data with weird values of durations)
++ *The time calculation here is completely different from that for the even/odd analysis*
++ No one used hints on diagrammic steps (so symbolic steps only is the same for overall)
+
+```{r}
+df_replicate %>%
+  select(avg_hints_sym, adj_avg_tps, avg_inc_sym) %>%
+  rename(`Avg. Time Per Step` = adj_avg_tps,
+         `Avg. Hint Used per Symbolic Steps` = avg_hints_sym,
+         `Avg. Incorrects per Symbolic Step` = avg_inc_sym) %>%
+  gather() %>%
+  group_by(key) %>%
+  summarise(Mean = mean(value),
+            `Standard Deviation` = sd(value)) %>%
+  rename("Component" = key)
+```
+
+### Average hint per step, time spent, and average incorrect (symbolic steps only) for **odd** problems
+
+```{r}
+df_evenodd %>%
+  filter(group %in% c("odd_dia", "odd_int")) %>%
+  select(avg_hints_sym, avg_tps_sym, avg_inc_sym) %>%
+  rename(`Avg. Time Per Step` = avg_tps_sym,
+         `Avg. Hint Used per Symbolic Steps` = avg_hints_sym,
+         `Avg. Incorrects per Symbolic Step` = avg_inc_sym) %>%
+  gather() %>%
+  group_by(key) %>%
+  summarise(Mean = mean(value),
+            `Standard Deviation` = sd(value)) %>%
+  rename("Component" = key)
+```
+
+### Average hint per step, time spent, and average incorrect (symbolic steps only) for **even** problems
+
+
+```{r}
+df_evenodd %>%
+  filter(group %in% c("eve_dia", "eve_int")) %>%
+  select(avg_hints_sym, avg_tps_sym, avg_inc_sym) %>%
+  rename(`Avg. Time Per Step` = avg_tps_sym,
+         `Avg. Hint Used per Symbolic Steps` = avg_hints_sym,
+         `Avg. Incorrects per Symbolic Step` = avg_inc_sym) %>%
+  gather() %>%
+  group_by(key) %>%
+  summarise(Mean = mean(value),
+            `Standard Deviation` = sd(value)) %>%
+  rename("Component" = key)
+```
