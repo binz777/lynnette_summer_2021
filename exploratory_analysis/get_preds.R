@@ -31,7 +31,8 @@ logdata_s %>%
   filter(`Anon Student Id` %in% prepost$username) %>%
   mutate(used_hint = ifelse(Hints >= 1, 1, 0)) %>%
   group_by(`Anon Student Id`) %>%
-  summarise(steps_with_hints = sum(used_hint)) %>%
+  summarise(steps_with_hints = sum(used_hint),
+            total_sym_step = sum(!grepl("selectd", `KC (Default)`))) %>%
   rename(username = `Anon Student Id`) -> df2
 
 
@@ -44,6 +45,7 @@ logdata_s %>%
   summarise(inc_dia = sum(Incorrects[grepl("selectd", `KC (Default)`)]),
             inc_sym = sum(Incorrects[!grepl("selectd", `KC (Default)`)]),
             hints = sum(Hints),
+            hints_sym = sum(Hints[!grepl("selectd", `KC (Default)`)]),
             first_try = sum(`First Attempt` == "correct")) %>%
   rename(username = `Anon Student Id`) -> df3 # no one used hints on diagrammatic steps
 
@@ -91,7 +93,9 @@ df_c <- inner_join(df_a, df_b, by = "username")
 df <- inner_join(df_c, df5, by = "username") %>%
   mutate(perc_hint_steps = steps_with_hints / tot_steps,
          perc_first_try = first_try /tot_steps,
-         avg_time_per_step = tot_time / tot_steps,
+         avg_inc_sym = inc_sym / total_sym_step, 
+         avg_hints_sym = hints_sym / total_sym_step,
+         avg_time_per_step = tot_time / total_sym_step,
          adj_avg_tps = adj_tot_time / tot_steps) %>%
   select(-c(tot_steps, steps_with_hints))
 

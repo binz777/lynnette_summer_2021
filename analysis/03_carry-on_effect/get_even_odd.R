@@ -118,6 +118,8 @@ df_s %>%
   mutate(prop_hint_steps = steps_with_hints / tot_steps,
          prop_first_try = first_try / tot_steps,
          prop_first_try_sym = first_try_sym / total_sym_step,
+         avg_inc_sym = inc_sym / total_sym_step,
+         avg_hints_sym = hints /  total_sym_step,
          avg_tps = tot_time / tot_steps,
          avg_tps_sym = tot_time_sym / total_sym_step) %>%
   select(-c(tot_steps, steps_with_hints, first_try, total_sym_step, first_try_sym)) -> df
