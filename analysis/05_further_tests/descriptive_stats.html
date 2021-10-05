@@ -276,6 +276,33 @@ div.tocify {
 ## 4 PK_diagrm_post     1.29                 1.20
 ## 5 PK_nodiagram_post  1.97                 1.47
 ## 6 PK_nodiagram_pre   2.02                 1.33</code></pre>
+<div id="by-condition" class="section level4">
+<h4><em>By condition</em></h4>
+<pre class="r"><code>df_prepost %&gt;%
+  select(CK_pre, CK_post, PK_diagram_pre, PK_diagrm_post, PK_nodiagram_pre, PK_nodiagram_post, condition) %&gt;%
+  gather(key, value, -c(condition)) %&gt;%
+  group_by(condition, key) %&gt;%
+  summarise(Mean = mean(value),
+            `Standard Deviation` = sd(value)) %&gt;%
+  rename(&quot;Component&quot; = key,
+         &quot;Condition&quot; = condition)</code></pre>
+<pre><code>## # A tibble: 12 x 4
+## # Groups:   Condition [2]
+##    Condition   Component          Mean `Standard Deviation`
+##    &lt;chr&gt;       &lt;chr&gt;             &lt;dbl&gt;                &lt;dbl&gt;
+##  1 alldiagram  CK_post            3.30                 1.55
+##  2 alldiagram  CK_pre             2.82                 1.53
+##  3 alldiagram  PK_diagram_pre     1.27                 1.15
+##  4 alldiagram  PK_diagrm_post     1.45                 1.25
+##  5 alldiagram  PK_nodiagram_post  2.21                 1.45
+##  6 alldiagram  PK_nodiagram_pre   2.18                 1.42
+##  7 interleaved CK_post            2.75                 1.50
+##  8 interleaved CK_pre             2.78                 1.39
+##  9 interleaved PK_diagram_pre     1.03                 1.06
+## 10 interleaved PK_diagrm_post     1.12                 1.13
+## 11 interleaved PK_nodiagram_post  1.72                 1.46
+## 12 interleaved PK_nodiagram_pre   1.84                 1.22</code></pre>
+</div>
 </div>
 <div id="overall-average-hint-per-step-time-spent-and-average-incorrect-symbolic-steps-only" class="section level3">
 <h3>Overall average hint per step, time spent, and average incorrect (symbolic steps only)</h3>
@@ -300,6 +327,30 @@ div.tocify {
 ## 1 Avg. Hint Used per Symbolic Steps 0.346                0.516
 ## 2 Avg. Incorrects per Symbolic Step 0.657                0.813
 ## 3 Avg. Time Per Step                9.45                 5.84</code></pre>
+<div id="by-condition-1" class="section level4">
+<h4><em>By condition</em></h4>
+<pre class="r"><code>df_replicate %&gt;%
+  select(avg_hints_sym, adj_avg_tps, avg_inc_sym, condition) %&gt;%
+  rename(`Avg. Time Per Step` = adj_avg_tps,
+         `Avg. Hint Used per Symbolic Steps` = avg_hints_sym,
+         `Avg. Incorrects per Symbolic Step` = avg_inc_sym) %&gt;%
+  gather(key, value, -c(condition)) %&gt;%
+  group_by(condition, key) %&gt;%
+  summarise(Mean = mean(value),
+            `Standard Deviation` = sd(value)) %&gt;%
+  rename(&quot;Component&quot; = key,
+         &quot;Condition&quot; = condition)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+## # Groups:   Condition [2]
+##   Condition   Component                           Mean `Standard Deviation`
+##   &lt;chr&gt;       &lt;chr&gt;                              &lt;dbl&gt;                &lt;dbl&gt;
+## 1 alldiagram  Avg. Hint Used per Symbolic Steps  0.161                0.228
+## 2 alldiagram  Avg. Incorrects per Symbolic Step  0.454                0.634
+## 3 alldiagram  Avg. Time Per Step                 6.85                 2.70 
+## 4 interleaved Avg. Hint Used per Symbolic Steps  0.526                0.644
+## 5 interleaved Avg. Incorrects per Symbolic Step  0.854                0.923
+## 6 interleaved Avg. Time Per Step                12.0                  6.92</code></pre>
+</div>
 </div>
 <div id="average-hint-per-step-time-spent-and-average-incorrect-symbolic-steps-only-for-odd-problems" class="section level3">
 <h3>Average hint per step, time spent, and average incorrect (symbolic steps only) for <strong>odd</strong> problems</h3>
@@ -320,6 +371,31 @@ div.tocify {
 ## 1 Avg. Hint Used per Symbolic Steps  0.430                0.606
 ## 2 Avg. Incorrects per Symbolic Step  0.847                1.02 
 ## 3 Avg. Time Per Step                17.8                 13.5</code></pre>
+<div id="by-condition-2" class="section level4">
+<h4><em>By condition</em></h4>
+<pre class="r"><code>df_evenodd %&gt;%
+  filter(group %in% c(&quot;odd_dia&quot;, &quot;odd_int&quot;)) %&gt;%
+  select(avg_hints_sym, avg_tps_sym, avg_inc_sym, group) %&gt;%
+  rename(`Avg. Time Per Step` = avg_tps_sym,
+         `Avg. Hint Used per Symbolic Steps` = avg_hints_sym,
+         `Avg. Incorrects per Symbolic Step` = avg_inc_sym) %&gt;%
+  gather(key, value, -c(group)) %&gt;%
+  group_by(group, key) %&gt;%
+  summarise(Mean = mean(value),
+            `Standard Deviation` = sd(value)) %&gt;%
+  rename(&quot;Component&quot; = key,
+         &quot;Condition&quot; = group)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+## # Groups:   Condition [2]
+##   Condition Component                           Mean `Standard Deviation`
+##   &lt;chr&gt;     &lt;chr&gt;                              &lt;dbl&gt;                &lt;dbl&gt;
+## 1 odd_dia   Avg. Hint Used per Symbolic Steps  0.232                0.309
+## 2 odd_dia   Avg. Incorrects per Symbolic Step  0.697                1.02 
+## 3 odd_dia   Avg. Time Per Step                14.1                  9.15 
+## 4 odd_int   Avg. Hint Used per Symbolic Steps  0.623                0.751
+## 5 odd_int   Avg. Incorrects per Symbolic Step  0.993                1.01 
+## 6 odd_int   Avg. Time Per Step                21.4                 16.0</code></pre>
+</div>
 </div>
 <div id="average-hint-per-step-time-spent-and-average-incorrect-symbolic-steps-only-for-even-problems" class="section level3">
 <h3>Average hint per step, time spent, and average incorrect (symbolic steps only) for <strong>even</strong> problems</h3>
@@ -340,6 +416,31 @@ div.tocify {
 ## 1 Avg. Hint Used per Symbolic Steps  0.224                0.428
 ## 2 Avg. Incorrects per Symbolic Step  0.328                0.431
 ## 3 Avg. Time Per Step                11.0                  8.83</code></pre>
+<div id="by-condition-3" class="section level4">
+<h4><em>By condition</em></h4>
+<pre class="r"><code>df_evenodd %&gt;%
+  filter(group %in% c(&quot;eve_dia&quot;, &quot;eve_int&quot;)) %&gt;%
+  select(avg_hints_sym, avg_tps_sym, avg_inc_sym, group) %&gt;%
+  rename(`Avg. Time Per Step` = avg_tps_sym,
+         `Avg. Hint Used per Symbolic Steps` = avg_hints_sym,
+         `Avg. Incorrects per Symbolic Step` = avg_inc_sym) %&gt;%
+  gather(key, value, -c(group)) %&gt;%
+  group_by(group, key) %&gt;%
+  summarise(Mean = mean(value),
+            `Standard Deviation` = sd(value)) %&gt;%
+  rename(&quot;Component&quot; = key,
+         &quot;Condition&quot; = group)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+## # Groups:   Condition [2]
+##   Condition Component                            Mean `Standard Deviation`
+##   &lt;chr&gt;     &lt;chr&gt;                               &lt;dbl&gt;                &lt;dbl&gt;
+## 1 eve_dia   Avg. Hint Used per Symbolic Steps  0.0847                0.186
+## 2 eve_dia   Avg. Incorrects per Symbolic Step  0.176                 0.289
+## 3 eve_dia   Avg. Time Per Step                 7.51                  5.14 
+## 4 eve_int   Avg. Hint Used per Symbolic Steps  0.367                 0.549
+## 5 eve_int   Avg. Incorrects per Symbolic Step  0.485                 0.498
+## 6 eve_int   Avg. Time Per Step                14.6                  10.4</code></pre>
+</div>
 </div>
 
 
